@@ -1,0 +1,37 @@
+extends ../layout
+
+block content  
+  <div class="card mb-4">
+    <div class="card-header">
+        <i class="fas fa-table me-1"></i>User List
+    </div>
+    <div class="card-body">
+      <table id="datatablesSimple">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>User Name</th>
+            <th colspan=2><a class='btn btn-primary' href='/users/register'>Create user</a></th>
+          </tr>
+        </thead>
+        <tfoot>
+          <tr>
+            <th>Name</th>
+            <th>User Name</th>
+            <th colspan=2><a class='btn btn-primary' href='/users/register'>Create user</a></th>
+          </tr>
+        </tfoot>
+        <tbody>
+          each val in users
+            <tr>
+              <td>#{val.name}</td>
+              <td>#{val.userName}</td>
+              <td><a class='btn btn-primary' href='/users/edit/#{val.id}'>Edit</a></td>
+              <td><a class='btn btn-primary' href='/users/delete/#{val.id}'>Delete</a></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>  
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script>
+  <script src="https://startbootstrap.github.io/startbootstrap-sb-admin/js/datatables-simple-demo.js"></script>

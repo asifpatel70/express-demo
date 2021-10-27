@@ -1,0 +1,40 @@
+extends ../layout
+
+block content  
+  <div class="card mb-4">
+    <div class="card-header">
+        <i class="fas fa-table me-1"></i>Product List
+    </div>
+    <div class="card-body">
+      <table id="datatablesSimple">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Product Number</th>
+            <th>Price</th>
+            <th colspan=2><a class='btn btn-primary' href='/products/create'>Create product</a></th>
+          </tr>
+        </thead>
+        <tfoot>
+          <tr>
+            <th>Name</th>
+            <th>Product Number</th>
+            <th>Price</th>
+            <th colspan=2><a class='btn btn-primary' href='/products/regicreate'>Create product</a></th>
+          </tr>
+        </tfoot>
+        <tbody>
+          each val in products
+            <tr>
+              <td>#{val.name}</td>
+              <td>#{val.productNumber}</td>
+              <td>#{val.price}</td>
+              <td><a class='btn btn-primary' href='/products/edit/#{val.id}'>Edit</a></td>
+              <td><a class='btn btn-primary' href='/products/delete/#{val.id}'>Delete</a></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>  
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script>
+  <script src="https://startbootstrap.github.io/startbootstrap-sb-admin/js/datatables-simple-demo.js"></script>

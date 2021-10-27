@@ -1,0 +1,39 @@
+extends ../layout
+
+block content
+    if(typeof errors != 'undefined')
+        each val in errors
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">#{val.msg}</div>
+    #layoutAuthentication
+        #layoutAuthentication_content
+            main
+                .container
+                    .row.justify-content-center
+                        .col-lg-7
+                            .card.shadow-lg.border-0.rounded-lg.mt-5
+                            .card-header
+                                h3.text-center.font-weight-light.my-4 Create product
+                            .card-body
+                                form(action='/products/store', method='POST')
+                                    .form-floating.mb-3
+                                            input.form-control#inputFirstName(type='text' required name="name" placeholder='Enter product name')
+                                            label(for='inputFirstName') Name
+                                    .form-floating.mb-3
+                                            input.form-control#inputUserName(type='number' required name="productNumber" placeholder='Enter product number')
+                                            label(for='inputFirstName') Product Number
+                                    .form-floating.mb-3
+                                            input.form-control#inputPassword(type='number' required name="price" placeholder='Enter Price')
+                                            label(for='inputPassword') Price
+                                    .mt-4.mb-0
+                                        .d-grid
+                                        input.btn.btn-primary.btn-block(type='submit')
+        #layoutAuthentication_footer
+            footer.py-4.bg-light.mt-auto
+            .container-fluid.px-4
+                .d-flex.align-items-center.justify-content-between.small
+                .text-muted Copyright @ Your Website 2021
+                div
+                    a(href='#') Privacy Policy
+                    a(href='#') Terms & Conditions
+        script(src='https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js' crossorigin='anonymous')
+        script(src='https://startbootstrap.github.io/startbootstrap-sb-admin/js/scripts.js')
