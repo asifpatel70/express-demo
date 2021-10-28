@@ -55,10 +55,11 @@ exports.update = async (req, res) =>{
 exports.remove = async (req,res) =>{
   await Product.destroy({
     where: {
-      id: req.params.id
+      id: req.body.id
     }
   });
-  res.redirect('/products')
+  //res.redirect('/products')
+  res.json({msg:'success'});
 }
 exports.valid = () =>{
 return {

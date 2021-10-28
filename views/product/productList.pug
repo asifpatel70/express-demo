@@ -30,11 +30,11 @@ block content
               <td>#{val.productNumber}</td>
               <td>#{val.price}</td>
               <td><a class='btn btn-primary' href='/products/edit/#{val.id}'>Edit</a></td>
-              <td><a class='btn btn-primary' href='/products/delete/#{val.id}'>Delete</a></td>
+              <td><input type="button" class='btn btn-primary dltrecord' data-type="products" data-id='#{val.id}' value="Delete"></td>
             </tr>
         </tbody>
       </table>
     </div>  
-  </div>
+  </div>  
   <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script>
   <script src="https://startbootstrap.github.io/startbootstrap-sb-admin/js/datatables-simple-demo.js"></script>

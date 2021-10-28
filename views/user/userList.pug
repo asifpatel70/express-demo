@@ -27,11 +27,11 @@ block content
               <td>#{val.name}</td>
               <td>#{val.userName}</td>
               <td><a class='btn btn-primary' href='/users/edit/#{val.id}'>Edit</a></td>
-              <td><a class='btn btn-primary' href='/users/delete/#{val.id}'>Delete</a></td>
+              <td><input type="button" class='btn btn-primary dltrecord' data-id='#{val.id}' data-type="users" value="Delete"></td>
             </tr>
         </tbody>
       </table>
     </div>  
-  </div>
+  </div>  
   <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script>
   <script src="https://startbootstrap.github.io/startbootstrap-sb-admin/js/datatables-simple-demo.js"></script>

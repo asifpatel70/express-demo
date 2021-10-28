@@ -64,10 +64,11 @@ exports.update = async (req, res) =>{
 exports.remove = async (req,res) =>{
   await User.destroy({
     where: {
-      id: req.params.id
+      id: req.body.id
     }
   });
-  res.redirect('/users')
+  //res.redirect('/users')
+  res.json({msg:'success'});
 }
 exports.valid = () =>{
 return {

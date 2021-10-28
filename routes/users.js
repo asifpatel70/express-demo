@@ -10,6 +10,6 @@ router.get('/register',user.register);
 router.post('/create',checkSchema(user.valid()),user.create);
 router.get('/edit/:id', user.edit);
 router.post('/update/:id', user.update);
-router.get('/delete/:id',user.remove);
+router.delete('/delete',user.remove);
 
 module.exports = router;

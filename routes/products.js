@@ -9,6 +9,6 @@ router.get('/create',product.create);
 router.post('/store',checkSchema(product.valid()),product.store);
 router.get('/edit/:id', product.edit);
 router.post('/update/:id', product.update);
-router.get('/delete/:id',product.remove);
+router.delete('/delete',product.remove);
 
 module.exports = router;

@@ -6,7 +6,7 @@ var bodyParser = require('body-parser')
 var logger = require('morgan');
 const cors = require("cors");
 const session = require('express-session')
-
+var $ = require('jquery');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -24,6 +24,10 @@ app.use(bodyParser.urlencoded({ extended: false }))
   resave: true,
   saveUninitialized: true
 }));
+
+app.use('/jquery',express.static(path.join(__dirname+'/node_modules/jquery/dist/')));
+//app.use('pb',express.static(path.join(__dirname+'/public')));  
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
