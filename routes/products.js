@@ -6,7 +6,7 @@ var product = require('../controllers/productController');
 /* GET products listing. */
 router.get('/',product.index);
 router.get('/create',product.create);
-router.post('/store',product.store);
+router.post('/store',checkSchema(product.valid()),product.store);
 router.get('/edit/:id', product.edit);
 router.post('/update/:id', product.update);
 router.get('/delete/:id',product.remove);

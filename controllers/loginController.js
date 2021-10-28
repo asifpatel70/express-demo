@@ -20,7 +20,6 @@ exports.signin = (req, res) => {
             });
         }
         req.session.loggedIn = true
-        console.log(req.session)
         res.redirect('/users')
     })
     .catch(err => {

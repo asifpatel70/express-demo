@@ -12,7 +12,7 @@ exports.index = async (req, res) =>{
 };
 exports.register = (req, res) =>{
   if(!req.session.loggedIn)
-  res.redirect('login');
+  res.redirect('/login');
   else  
   res.render('./user/register');
 };
@@ -20,13 +20,10 @@ exports.create = async (req, res,next) =>{
     try{
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        // return res.status(400).json({
-        //   const alert = errors.array();
-        // });
-      res.render('./user/register',{errors: errors.array()});
-      //res.end();
-      return;
-    }
+        res.render('./user/register',{errors: errors.array()});
+        //res.end();
+        return;
+      }
       User.create({ 
           name: req.body.firstName, 
           userName: req.body.userName, 

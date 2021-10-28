@@ -10,6 +10,11 @@ exports.create = (req, res) =>{
     res.render('./product/create');
 };
 exports.store = async (req, res,next) =>{ 
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.render('./product/create',{errors: errors.array()});
+    return
+  }
     Product.create({ 
           name: req.body.name, 
           productNumber: req.body.productNumber, 
@@ -48,34 +53,29 @@ exports.remove = async (req,res) =>{
 }
 exports.valid = () =>{
 return {
-    firstName:{
+    name:{
       notEmpty: true,
       errorMessage: "Name field cannot be empty"
 
     },
-    userName: {
+    productNumber: {
         custom: {
             options: value => {
-                return User.findAll({
+                return Product.findAll({
                   where: {
-                    userName: value
+                    productNumber: value
                   }
-                }).then(user => {
-                    if (user.length > 0) {
-                        return Promise.reject('Username already in use')
+                }).then(product => {
+                    if (product.length > 0) {
+                        return Promise.reject('Product number already in use')
                     }
                 })
             }
         }
     },
-    password: {
-        isStrongPassword: {
-            minLength: 8,
-            minLowercase: 1,
-            minUppercase: 1,
-            minNumbers: 1
-        },
-        errorMessage: "Password must be greater than 8 and contain at least one uppercase letter, one lowercase letter, and one number",
-    }
+    price:{
+      notEmpty: true,
+      errorMessage: "Name field cannot be empty"
+    },
   }
 }
