@@ -3,11 +3,17 @@ const Product = models.Product;
 const { check, oneOf, validationResult } = require('express-validator')
 
 exports.index = async (req, res) =>{
-    const product = await Product.findAll();
-    res.render('./product/productList',{products : product});
+  if(!req.session.loggedIn)
+  res.redirect('login');
+
+  const product = await Product.findAll();
+  res.render('./product/productList',{products : product});
 };
 exports.create = (req, res) =>{
-    res.render('./product/create');
+  if(!req.session.loggedIn)
+  res.redirect('login');
+
+  res.render('./product/create');
 };
 exports.store = async (req, res,next) =>{ 
   const errors = validationResult(req);
@@ -24,6 +30,9 @@ exports.store = async (req, res,next) =>{
       });
 };
 exports.edit =  async (req, res) =>{
+  if(!req.session.loggedIn)
+  res.redirect('login');
+
   product = await Product.findByPk(req.params.id)
   .then(product => {
     if(!product) {
