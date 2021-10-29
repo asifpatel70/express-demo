@@ -1,46 +1,36 @@
 const models = require("../models");
 const md5 = require('md5')
 const User = models.User;
-const { check, oneOf, validationResult } = require('express-validator')
 
 exports.index = async (req, res) =>{
-   if(!req.session.loggedIn)
-   res.redirect('login');
-    
   const users = await User.findAll();
   res.render('./user/userList',{users : users});
 };
 exports.register = (req, res) =>{
-  if(!req.session.loggedIn)
-  res.redirect('/login');
-  else  
   res.render('./user/register');
 };
 exports.create = async (req, res,next) =>{ 
-    try{
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        res.render('./user/register',{errors: errors.array()});
-        //res.end();
-        return;
-      }
+  User.findAll({
+    where: {
+      userName: req.body.userName
+    }
+  }).
+  then(user => {
+    if (user.length > 0) {
+      res.render('./user/register',{errors:'user name already in use'});
+    }
+    else{
       User.create({ 
-          name: req.body.firstName, 
-          userName: req.body.userName, 
-          password: md5(req.body.password)
-          }).then(function(user) {
-            res.redirect('/users')
+        name: req.body.firstName, 
+        userName: req.body.userName, 
+        password: md5(req.body.password)
+        }).then(function(user) {
+          res.redirect('/users')
       });
     }
-    catch(err)  
-    {
-      return next(err)
-    }
+  })
 };
 exports.edit =  async (req, res) =>{
-  if(!req.session.loggedIn)
-  res.redirect('login');
-  
   user = await User.findByPk(req.params.id)
   .then(user => {
     if(!user) {

@@ -2,8 +2,7 @@ extends ../layout
 
 block content
     if(typeof errors != 'undefined')
-        each val in errors
-            <div class="alert alert-warning alert-dismissible fade show" role="alert">#{val.msg}</div>
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">#{errors}</div>
     #layoutAuthentication
         #layoutAuthentication_content
             main

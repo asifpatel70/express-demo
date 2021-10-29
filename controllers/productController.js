@@ -1,38 +1,58 @@
 const models = require("../models");
 const Product = models.Product;
-const { check, oneOf, validationResult } = require('express-validator')
+const multer = require('multer');
+var path = require('path');
+const { Op } = require("sequelize");
 
-exports.index = async (req, res) =>{
-  if(!req.session.loggedIn)
-  res.redirect('login');
 
+const imageStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './public/images')
+  },
+  filename: (req, file, cb) => {
+      cb(null, file.fieldname + '_' + Date.now() 
+        + path.extname(file.originalname))
+  }
+});
+const upload = multer({ storage: imageStorage })
+
+exports.index = async (req, res,next) =>{
   const product = await Product.findAll();
   res.render('./product/productList',{products : product});
 };
 exports.create = (req, res) =>{
-  if(!req.session.loggedIn)
-  res.redirect('login');
-
-  res.render('./product/create');
+    res.render('./product/create');
 };
-exports.store = async (req, res,next) =>{ 
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    res.render('./product/create',{errors: errors.array()});
-    return
-  }
-    Product.create({ 
-          name: req.body.name, 
-          productNumber: req.body.productNumber, 
-          price: req.body.price
-          }).then(function(user) {
-            res.redirect('/products')
-      });
+exports.store = async (req, res,next) =>{
+    upload.single('image')(req, res, () => {
+      Product.findAll({
+        where: {
+          productNumber: req.body.productNumber
+        }
+      }).then(product => {
+          if (product.length > 0) {
+              res.render('./product/create',{errors:'Product number already in use'});
+              return false;
+          }
+          else{
+            Product.create({ 
+              name: req.body.name, 
+              productNumber: req.body.productNumber, 
+              price: req.body.price,
+              dateFrom: req.body.dateFrom,
+              dateTo: req.body.dateTo,
+              description: req.body.description,
+              category: req.body.category,
+              status: req.body.status,
+              image: req.file.filename
+            }).then(function(product) {
+                  res.redirect('/products')
+            });
+          }            
+      })
+    });
 };
 exports.edit =  async (req, res) =>{
-  if(!req.session.loggedIn)
-  res.redirect('login');
-
   product = await Product.findByPk(req.params.id)
   .then(product => {
     if(!product) {
@@ -44,13 +64,25 @@ exports.edit =  async (req, res) =>{
   });
 };
 exports.update = async (req, res) =>{
-  await Product.update({ name: req.body.name,productNumber: req.body.productNumber, 
-    price: req.body.price }, {
-    where: {
-      id: req.params.id
-    }
-  });
-  res.redirect('/products')
+  upload.single('image')(req, res, () => {
+    Product.update({ 
+      name: req.body.name,
+      productNumber: req.body.productNumber, 
+      price: req.body.price,
+      dateFrom: req.body.dateFrom,
+      dateTo: req.body.dateTo,
+      description: req.body.description,
+      category: req.body.category,
+      status: req.body.status, 
+      image: (req.file)? req.file.filename : req.body.image_edit,
+    }, {
+      where: {
+        id: req.params.id
+      }
+    }).then(function(product) {
+      res.redirect('/products')
+    })
+  })
 }
 exports.remove = async (req,res) =>{
   await Product.destroy({

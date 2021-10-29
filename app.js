@@ -7,17 +7,18 @@ var logger = require('morgan');
 const cors = require("cors");
 const session = require('express-session')
 var $ = require('jquery');
+const fs = require("fs");
+
+var app = express();
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var productsRouter = require('./routes/products');
 
-var app = express();
-
-app.use(bodyParser.urlencoded({ extended: false }))
- 
 // // parse application/json
- app.use(bodyParser.json())
+ 
  //app.use(cors(corsOptions));
  app.use(session({
   secret: '2C44-4D44-WppQ38S',
@@ -26,7 +27,7 @@ app.use(bodyParser.urlencoded({ extended: false }))
 }));
 
 app.use('/jquery',express.static(path.join(__dirname+'/node_modules/jquery/dist/')));
-//app.use('pb',express.static(path.join(__dirname+'/public')));  
+//app.use(express.static(path.join(__dirname+'/public')));  
 
 
 // view engine setup
@@ -37,7 +38,9 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+//app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static('public'))
+
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);

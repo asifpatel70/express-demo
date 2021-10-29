@@ -2,8 +2,7 @@ extends ../layout
 
 block content
     if(typeof errors != 'undefined')
-        each val in errors
-            <div class="alert alert-warning alert-dismissible fade show" role="alert">#{val.msg}</div>
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">#{errors}</div>
     #layoutAuthentication
         #layoutAuthentication_content
             main
@@ -14,16 +13,42 @@ block content
                             .card-header
                                 h3.text-center.font-weight-light.my-4 Create product
                             .card-body
-                                form(action='/products/store', method='POST')
+                                form(action='/products/store', method='POST' enctype="multipart/form-data")
                                     .form-floating.mb-3
-                                            input.form-control#inputFirstName(type='text' required name="name" placeholder='Enter product name')
-                                            label(for='inputFirstName') Name
+                                            input.form-control#inputName(type='text' required name="name" placeholder='Enter product name')
+                                            label(for='inputName') Name
                                     .form-floating.mb-3
-                                            input.form-control#inputUserName(type='number' required name="productNumber" placeholder='Enter product number')
-                                            label(for='inputFirstName') Product Number
+                                            input.form-control#inputproductNumber(type='number' required name="productNumber" placeholder='Enter product number')
+                                            label(for='inputproductNumber') Product Number
                                     .form-floating.mb-3
-                                            input.form-control#inputPassword(type='number' step="any" required name="price" placeholder='Enter Price')
-                                            label(for='inputPassword') Price
+                                            input.form-control#inputPrice(type='number' step="any" required name="price" placeholder='Enter Price')
+                                            label(for='inputPrice') Price
+                                    select.form-select.form-floating.mb-3(name="status")
+                                        option(selected) status
+                                        option(value='active') Active
+                                        option(value="inActive") In Active                                                    
+                                    .form-group.form-floating.mb-3.input-group.date#datepicker
+                                            input.form-control#inputdateFrom(type='text' required name="dateFrom")
+                                            span.input-group-append
+                                                span.input-group-text.bg-white
+                                                    i.fa.fa-calendar
+                                            label(for='inputdateFrom') dateFrom
+                                    .form-group.form-floating.mb-3.input-group.date#datepicker1
+                                            input.form-control#inputdateTo(type='text' required name="dateTo")
+                                            span.input-group-append
+                                                span.input-group-text.bg-white
+                                                    i.fa.fa-calendar
+                                            label(for='inputdateTo') dateTo
+                                    .form-floating.mb-3
+                                            textarea.form-control#inpudescription(name="description")
+                                            label(for='inpudescription') description
+                                    select.form-select.form-floating.mb-3(name="category")
+                                        option(selected) Category
+                                        option(value='consumerProduct') Consumer Product
+                                        option(value="IndustrialProduct") Industrial Product
+                                    .form-floating.mb-3
+                                            input.form-control#inputimage(type='file' required name="image")
+                                            label(for='inputimage')
                                     .mt-4.mb-0
                                         .d-grid
                                         input.btn.btn-primary.btn-block(type='submit')
@@ -37,3 +62,4 @@ block content
                     a(href='#') Terms & Conditions
         script(src='https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js' crossorigin='anonymous')
         script(src='https://startbootstrap.github.io/startbootstrap-sb-admin/js/scripts.js')
+        script(src='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js')

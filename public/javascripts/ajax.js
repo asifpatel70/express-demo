@@ -22,4 +22,17 @@ $(document).ready(function(){
             }
         })
     });
+    $(function(){
+        $("#datepicker").datepicker({
+            format: "yyyy-mm-dd",
+          });
+        $("#datepicker1").datepicker({
+            format: "yyyy-mm-dd",
+        });
+    });
+    tinymce.init({
+        selector: 'textarea#inpudescription',
+        menubar: false
+      });
+    
 });

@@ -11,7 +11,7 @@ block content
                                 <div class="card shadow-lg border-0 rounded-lg mt-5">
                                     <div class="card-header"><h3 class="text-center font-weight-light my-4">Edit Account</h3></div>
                                     <div class="card-body">
-                                        <form action='/products/update/#{product.id}', method='POST'>
+                                        <form action='/products/update/#{product.id}', method='POST' enctype="multipart/form-data">
                                             <div class="form-floating mb-3">        
                                                 <input required class="form-control" value=#{product.name} name='name' id="inputFirstName" type="text" placeholder="Enter product name" />
                                                 <label for="inputFirstName">Name</label>
@@ -24,7 +24,34 @@ block content
                                                 <input required class="form-control" value=#{product.price} name='price' id="inputFirstName" type="text" placeholder="Enter product price" />
                                                 <label for="inputFirstName">Price</label>
                                             </div>
+                                            select.form-select.form-floating.mb-3(name="status")
+                                                if product.status == 'active'
+                                                    option( value= 'active' selected) Active
+                                                    option( value= 'inActive') In Active
+                                                else 
+                                                    option( value= 'active') Active
+                                                    option( value= 'inActive' selected) In Active
+                                            .form-floating.mb-3
+                                                    input.form-control#inputdateFrom(type="text" value=product.dateFrom required name="dateFrom" placeholder='Enter product name')
+                                                    label(for='inputdateFrom') dateFrom
+                                            .form-floating.mb-3
+                                                    input.form-control#inputdateTo(type='text' value=product.dateTo required name="dateTo" placeholder='Enter product name')
+                                                    label(for='inputdateTo') dateTo
+                                            .form-floating.mb-3
+                                                    textarea.form-control#inpudescription(name="description") #{product.description}
+                                                    label(for='inpudescription') description
+                                            select.form-select.form-floating.mb-3(name="category")
+                                                if product.category == 'consumerProduct'
+                                                    option( value= 'consumerProduct' selected) Consumer Product
+                                                    option( value= 'IndustrialProduct') Industrial Product
+                                                else 
+                                                    option( value= 'consumerProduct') Consumer Product
+                                                    option( value= 'IndustrialProduct' selected) Industrial Product
+                                            .form-floating.mb-3
+                                                    input.form-control#inputimage(type='file' name="image")
+                                                    label(for='inputimage')
                                             <div class="mt-4 mb-0">
+                                                <input type="hidden" name="image_edit" id="image_edit" value="#{product.image}">
                                                 <div class="d-grid">
                                                     <input type="submit" class="btn btn-primary btn-block" />
                                             </div>
