@@ -10,5 +10,8 @@ router.get('/edit/:id',chkLogin.checkLogin,product.edit);
 router.delete('/delete',chkLogin.checkLogin,product.remove);
 router.post('/store',chkLogin.checkLogin,product.store);
 router.post('/update/:id',product.update);
+router.get('/exportcsv/',product.exportCsv);
+router.get('/exportpdf/',product.exportPdf);
+router.get('/exportexcl/',product.exportExcl);
 
 module.exports = router;

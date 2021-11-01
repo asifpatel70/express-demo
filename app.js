@@ -7,7 +7,26 @@ var logger = require('morgan');
 const cors = require("cors");
 const session = require('express-session')
 var $ = require('jquery');
-const fs = require("fs");
+var i18n = require('i18n');
+var i18n = require('i18n');
+
+i18n.configure({
+
+//define how many languages we would support in our application
+locales:['en', 'no'],
+
+//define the path to language json files, default is /locales
+directory: __dirname + '/resources/locales',
+
+//define the default language
+defaultLocale: 'en',
+
+// define a custom cookie name to parse locale settings from 
+cookie: 'i18n'
+});
+
+
+
 
 var app = express();
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -20,12 +39,15 @@ var productsRouter = require('./routes/products');
 // // parse application/json
  
  //app.use(cors(corsOptions));
+ app.use(cookieParser("i18n_demo"));
  app.use(session({
   secret: '2C44-4D44-WppQ38S',
   resave: true,
-  saveUninitialized: true
+  saveUninitialized: true,
+  cookie: { maxAge: 60000 }
 }));
 
+app.use(i18n.init);
 app.use('/jquery',express.static(path.join(__dirname+'/node_modules/jquery/dist/')));
 //app.use(express.static(path.join(__dirname+'/public')));  
 
@@ -37,7 +59,6 @@ app.set('view engine', 'pug');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
 //app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static('public'))
 

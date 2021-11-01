@@ -23,4 +23,15 @@ router.get('/logout', function (req, res) {
   res.redirect('/login')
 });
 
+router.get('/no', function (req, res) {
+  res.cookie('i18n', 'no');
+  res.redirect('back');
+});
+
+router.get('/en', function (req, res) {
+  res.cookie('i18n', 'en');
+  res.redirect('back');
+});
+
+
 module.exports = router;

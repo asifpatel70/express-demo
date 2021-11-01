@@ -3,22 +3,22 @@ extends ../layout
 block content  
   <div class="card mb-4">
     <div class="card-header">
-        <i class="fas fa-table me-1"></i>User List
+        <i class="fas fa-table me-1"></i>#{i18n.__("userList")}
     </div>
     <div class="card-body">
       <table id="datatablesSimple">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>User Name</th>
-            <th colspan=2><a class='btn btn-primary' href='/users/register'>Create user</a></th>
+            <th>#{i18n.__("name")}</th>
+            <th>#{i18n.__("userName")}</th>
+            <th colspan=2><a class='btn btn-primary' href='/users/register'>#{i18n.__("createUser")}</a></th>
           </tr>
         </thead>
         <tfoot>
           <tr>
-            <th>Name</th>
-            <th>User Name</th>
-            <th colspan=2><a class='btn btn-primary' href='/users/register'>Create user</a></th>
+            <th>#{i18n.__("name")}</th>
+            <th>#{i18n.__("userName")}</th>
+            <th colspan=2><a class='btn btn-primary' href='/users/register'>#{i18n.__("createUser")}</a></th>
           </tr>
         </tfoot>
         <tbody>
@@ -26,8 +26,8 @@ block content
             <tr>
               <td>#{val.name}</td>
               <td>#{val.userName}</td>
-              <td><a class='btn btn-primary' href='/users/edit/#{val.id}'>Edit</a></td>
-              <td><input type="button" class='btn btn-primary dltrecord' data-id='#{val.id}' data-type="users" value="Delete"></td>
+              <td><a class='btn btn-primary' href='/users/edit/#{val.id}'>#{i18n.__("edit")}</a></td>
+              <td><input type="button" class='btn btn-primary dltrecord' data-id='#{val.id}' data-type="users" value='#{i18n.__("delete")}'></td>
             </tr>
         </tbody>
       </table>

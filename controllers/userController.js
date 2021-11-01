@@ -3,11 +3,13 @@ const md5 = require('md5')
 const User = models.User;
 
 exports.index = async (req, res) =>{
+  res.setLocale(req.cookies.i18n);
   const users = await User.findAll();
-  res.render('./user/userList',{users : users});
+  res.render('./user/userList',{users : users,i18n: res});
 };
 exports.register = (req, res) =>{
-  res.render('./user/register');
+  res.setLocale(req.cookies.i18n);
+  res.render('./user/register',{i18n: res});
 };
 exports.create = async (req, res,next) =>{ 
   User.findAll({
@@ -31,6 +33,7 @@ exports.create = async (req, res,next) =>{
   })
 };
 exports.edit =  async (req, res) =>{
+  res.setLocale(req.cookies.i18n);
   user = await User.findByPk(req.params.id)
   .then(user => {
     if(!user) {
@@ -38,7 +41,7 @@ exports.edit =  async (req, res) =>{
             message: "User not found with id " + req.params.id
         });            
     }
-    res.render('./user/edit',{users : user});
+    res.render('./user/edit',{users : user,i18n: res});
   });
 };
 exports.update = async (req, res) =>{

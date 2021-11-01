@@ -34,5 +34,24 @@ $(document).ready(function(){
         selector: 'textarea#inpudescription',
         menubar: false
       });
-    
+    $(document).on('click','#remove',function(event) {
+        event.preventDefault();
+        $('#image_edit').val('');
+        $('#preview_container').addClass('d-md-none');
+        $('#remove').addClass('d-md-none');
+        $('#preview').attr('src', '');
+        $("#preview").remove();
+    });
+    // $('.exportRecords').click(function(){ 
+    //     var type = $(this).attr('data-type'); 
+    //     $.ajax({
+    //         url: "/"+type+"/export", 
+    //         method: "post",
+    //         dataType:'json',
+    //         success: function () {
+    //           swal("Download", "Successfully download", "success");
+    //         }
+            
+    //     });
+    // });    
 });

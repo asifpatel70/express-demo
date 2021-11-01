@@ -11,18 +11,18 @@ block content
                         .col-lg-7
                             .card.shadow-lg.border-0.rounded-lg.mt-5
                             .card-header
-                                h3.text-center.font-weight-light.my-4 Create Account
+                                h3.text-center.font-weight-light.my-4 #{i18n.__("createAccount")}
                             .card-body
                                 form(action='/users/create', method='POST')
                                     .form-floating.mb-3
-                                            input.form-control#inputFirstName(type='text' required name="firstName" placeholder='Enter your first name')
-                                            label(for='inputFirstName') Name
+                                            input.form-control#inputFirstName(type='text' required name="firstName" placeholder='#{i18n.__("enterYourName")}')
+                                            label(for='inputFirstName') #{i18n.__("name")}
                                     .form-floating.mb-3
-                                            input.form-control#inputUserName(type='text' required name="userName" placeholder='Enter your first name')
-                                            label(for='inputFirstName') User Name
+                                            input.form-control#inputUserName(type='text' required name="userName" placeholder='#{i18n.__("enterYourUserName")}')
+                                            label(for='inputFirstName') #{i18n.__("userName")}
                                     .form-floating.mb-3
-                                            input.form-control#inputPassword(type='password' required name="password" placeholder='Create a password')
-                                            label(for='inputPassword') Password
+                                            input.form-control#inputPassword(type='password' required name="password" placeholder='#{i18n.__("createPassword")}')
+                                            label(for='inputPassword') #{i18n.__("password")}
                                     .mt-4.mb-0
                                         .d-grid
                                         input.btn.btn-primary.btn-block(type='submit')

@@ -3,26 +3,40 @@ extends ../layout
 block content  
   <div class="card mb-4">
     <div class="card-header">
-        <i class="fas fa-table me-1"></i>Product List
+        <i class="fas fa-table me-1"></i>#{i18n.__("productList")}
     </div>
     <div class="card-body">
       <table id="datatablesSimple">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Product Number</th>
-            <th>Price</th>
-            <th>Product Image</th>
-            <th colspan=2><a class='btn btn-primary' href='/products/create'>Create product</a></th>
+            <th>#{i18n.__("name")}</th>
+            <th>#{i18n.__("ProductNumber")}</th>
+            <th>#{i18n.__("price")}</th>
+            <th>#{i18n.__("productImage")}</th>
+            <th>#{i18n.__("dateFrom")}</th>
+            <th>#{i18n.__("dateTo")}</th>
+            <th colspan=2>
+              <a class='btn btn-primary' href='/products/create'>#{i18n.__("createProduct")}</a>
+              <a class='btn btn-primary exportRecords' href='/products/exportcsv'>#{i18n.__("exportCsv")}</a>
+              <a class='btn btn-primary exportRecords' href='/products/exportpdf'>#{i18n.__("exportPdf")}</a>
+              <a class='btn btn-primary exportRecords' href='/products/exportexcl'>#{i18n.__("exportExcel")}</a>
+            </th>
           </tr>
         </thead>
         <tfoot>
           <tr>
-            <th>Name</th>
-            <th>Product Number</th>
-            <th>Price</th>
-            <th>Product Image</th>
-            <th colspan=2><a class='btn btn-primary' href='/products/regicreate'>Create product</a></th>
+            <th>#{i18n.__("name")}</th>
+            <th>#{i18n.__("ProductNumber")}</th>
+            <th>#{i18n.__("price")}</th>
+            <th>#{i18n.__("productImage")}</th>
+            <th>#{i18n.__("dateFrom")}</th>
+            <th>#{i18n.__("dateTo")}</th>
+            <th colspan=2>
+              <a class='btn btn-primary' href='/products/create'>#{i18n.__("createProduct")}</a>
+              <a class='btn btn-primary exportRecords' href='/products/exportcsv'>#{i18n.__("exportCsv")}</a>
+              <a class='btn btn-primary exportRecords' href='/products/exportpdf'>#{i18n.__("exportPdf")}</a>
+              <a class='btn btn-primary exportRecords' href='/products/exportexcl'>#{i18n.__("exportExcel")}</a>
+            </th>
           </tr>
         </tfoot>
         <tbody>
@@ -31,9 +45,14 @@ block content
               <td>#{val.name}</td>
               <td>#{val.productNumber}</td>
               <td>#{val.price}</td>
-              <td><img height="100" width="100" src="/images/#{val.image}"/></td>
-              <td><a class='btn btn-primary' href='/products/edit/#{val.id}'>Edit</a></td>
-              <td><input type="button" class='btn btn-primary dltrecord' data-type="products" data-id='#{val.id}' value="Delete"></td>
+              <td>
+                if val.image
+                  <img height="100" width="100" src="/images/#{val.image}"/>
+              </td>
+              <td>#{moment(val.dateFrom).format('DD-MM-YYYY')}</td>
+              <td>#{moment(val.To).format('MMMM d YYYY')}</td>
+              <td><a class='btn btn-primary' href='/products/edit/#{val.id}'>#{i18n.__("edit")}</a></td>
+              <td><input type="button" class='btn btn-primary dltrecord' data-type="products" data-id='#{val.id}' value='#{i18n.__("delete")}'></td>
             </tr>
         </tbody>
       </table>
