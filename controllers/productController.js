@@ -2,12 +2,15 @@ const models = require("../models");
 const Product = models.Product;
 const multer = require('multer');
 var path = require('path');
-const { Op } = require("sequelize");
+//const { Op } = require("sequelize");
 const moment = require('moment-timezone');
 const Json2csvParser = require("json2csv").Parser;
 var PDFDocument = require('pdfkit');
 const doc = new PDFDocument();
 const excel = require("exceljs");
+const sequelize = require('sequelize');
+var pdf = require("html-pdf");
+
 
 
 const imageStorage = multer.diskStorage({
@@ -22,6 +25,7 @@ const imageStorage = multer.diskStorage({
 const upload = multer({ storage: imageStorage })
 
 exports.index = async (req, res,next) =>{
+  console.log(moment());
   res.setLocale(req.cookies.i18n);
   const product = await Product.findAll();
   res.render('./product/productList',{products : product,moment: moment,i18n: res});
@@ -51,7 +55,8 @@ exports.store = async (req, res,next) =>{
               description: req.body.description,
               category: req.body.category,
               status: req.body.status,
-              image: req.file.filename
+              image: req.file.filename,
+              createdAt:moment().format('YYYY-MM-DD hh:mm:ss')
             }).then(function(product) {
                   res.redirect('/products')
             });
@@ -131,7 +136,17 @@ return {
 }
 
 exports.exportCsv = async (req, res,next) =>{
-  const product = await Product.findAll();
+  const product = await Product.findAll({
+    attributes: [
+        'name',
+        'productNumber',
+        'price',
+        [sequelize.fn('date_format', sequelize.col('dateFrom'), '%Y-%m-%d %H:%i:%s'), 'dateFrom'],
+        [sequelize.fn('date_format', sequelize.col('dateTo'), '%Y-%m-%d %H:%i:%s'), 'dateTo'],
+        'description',
+        'category',
+        [sequelize.fn('date_format', sequelize.col('createdAt'), '%Y-%m-%d %H:%i:%s'), 'CreatedAt']
+    ]});
   const jsonData = JSON.parse(JSON.stringify(product));
   const json2csvParser = new Json2csvParser({ header: true});
   const csv = json2csvParser.parse(jsonData);
@@ -140,29 +155,75 @@ exports.exportCsv = async (req, res,next) =>{
   return res.send(csv);
 };
 exports.exportPdf = async (req, res,next) =>{
-  const product = await Product.findAll();
+  const product = await Product.findAll({
+    attributes: [
+        'name',
+        'productNumber',
+        'price',
+        [sequelize.fn('date_format', sequelize.col('dateFrom'), '%Y-%m-%d %H:%i:%s'), 'dateFrom'],
+        [sequelize.fn('date_format', sequelize.col('dateTo'), '%Y-%m-%d %H:%i:%s'), 'dateTo'],
+        'description',
+        'category',
+        [sequelize.fn('date_format', sequelize.col('createdAt'), '%Y-%m-%d %H:%i:%s'), 'CreatedAt']
+    ]});
   const jsonData = JSON.parse(JSON.stringify(product));
-  const json2csvParser = new Json2csvParser({ header: true});
-  const csv = json2csvParser.parse(jsonData);
-  res.header('Content-Type', 'application/pdf');
-  res.attachment(product.pdf);
-  doc.fillColor('red')
-     .text("Name",{align: 'left'});
-  doc.fillColor('red')
-     .text("Product Number",{align: 'left'});
-  doc.fillColor('red')
-     .text("Price",{align: 'left'});
-  doc.fillColor('red')
-     .text("Image",{align: 'left'});
-  jsonData.forEach(obj => {
-    
+  res.render(path.join(__dirname, './views/product/',"table.pug"), {products: jsonData}, (err, data) => {
+    if (err) {
+          res.send(err);
+    }else{
+      var options = {
+        "height": "11.25in",
+        "width": "8.5in",
+        "header": {
+            "height": "20mm"
+        },
+        "footer": {
+            "height": "20mm",
+        },
+      };
+    }
+    pdf.create(data, options).toFile("report.pdf", function (err, data) {
+      if (err) {
+          res.send(err);
+      } else {
+          const json2csvParser = new Json2csvParser({ header: true})
+          res.send("File created successfully");
+          res.header('Content-Type', 'application/pdf');
+          res.attachment(report.pdf);
+      }
+    });
   });
-  doc.pipe(res);
-  doc.end();
+  // const json2csvParser = new Json2csvParser({ header: true});
+  // const csv = json2csvParser.parse(jsonData);  
+  // res.header('Content-Type', 'application/pdf');
+  // res.attachment(product.pdf);
+  // doc.fillColor('red')
+  //    .text("Name",{align: 'left'});
+  // doc.fillColor('red')
+  //    .text("Product Number",{align: 'left'});
+  // doc.fillColor('red')
+  //    .text("Price",{align: 'left'});
+  // doc.fillColor('red')
+  //    .text("Image",{align: 'left'});
+  // jsonData.forEach(obj => {
+    
+  // });
+  // doc.pipe(res);
+  // doc.end();
   res.render('./product/productList',{products : product,moment: moment});
 };
 exports.exportExcl = async (req, res,next) =>{
-  const product = await Product.findAll();
+  const product = await Product.findAll({
+    attributes: [
+        'name',
+        'productNumber',
+        'price',
+        [sequelize.fn('date_format', sequelize.col('dateFrom'), '%Y-%m-%d %H:%i:%s'), 'dateFrom'],
+        [sequelize.fn('date_format', sequelize.col('dateTo'), '%Y-%m-%d %H:%i:%s'), 'dateTo'],
+        'description',
+        'category',
+        [sequelize.fn('date_format', sequelize.col('createdAt'), '%Y-%m-%d %H:%i:%s'), 'CreatedAt']
+    ]});
   const jsonProducts = JSON.parse(JSON.stringify(product));
 
   let workbook = new excel.Workbook();
@@ -173,9 +234,11 @@ exports.exportExcl = async (req, res,next) =>{
     { header: "Product Number", key: "productNumber", width: 25 },
     { header: "Price", key: "price", width: 25 },
     { header: "Date From", key: "dateFrom", width: 10 },
+    { header: "Date TO", key: "dateTo", width: 10 },
+    { header: "Description", key: "description", width: 10 },
+    { header: "Category", key: "category", width: 10 },
+    { header: "CreatedAt", key: "CreatedAt", width: 10 },
   ];
-  console.log(jsonProducts);
-  // Add Array Rows
   worksheet.addRows(jsonProducts);
 
   res.setHeader(

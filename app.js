@@ -8,7 +8,9 @@ const cors = require("cors");
 const session = require('express-session')
 var $ = require('jquery');
 var i18n = require('i18n');
-var i18n = require('i18n');
+const moment = require('moment-timezone');
+moment.tz.setDefault("Asia/Kolkata");
+
 
 i18n.configure({
 
@@ -24,10 +26,7 @@ defaultLocale: 'en',
 // define a custom cookie name to parse locale settings from 
 cookie: 'i18n'
 });
-
-
-
-
+//console.log(document.cookie)
 var app = express();
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
@@ -44,7 +43,7 @@ var productsRouter = require('./routes/products');
   secret: '2C44-4D44-WppQ38S',
   resave: true,
   saveUninitialized: true,
-  cookie: { maxAge: 6000 }
+  cookie: { maxAge: 60000000 }
 }));
 
 app.use(i18n.init);

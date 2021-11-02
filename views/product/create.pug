@@ -42,8 +42,8 @@ block content
                                     .form-floating.mb-3
                                             textarea.form-control#inpudescription(name="description")
                                             label(for='inpudescription') #{i18n.__("description")}
-                                    select.form-select.form-floating.mb-3(name="category")
-                                        option(selected) #{i18n.__("category")} 
+                                    select.form-select.form-floating.mb-3(name="category" required)
+                                        option(value='') #{i18n.__("category")} 
                                         option(value='consumerProduct') Consumer Product
                                         option(value="IndustrialProduct") Industrial Product
                                     .form-floating.mb-3

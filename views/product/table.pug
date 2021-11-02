@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+    <head></head>
+    <body >
+        <table>
+            <thead>
+                <th>name</th>
+                <th>ProductNumber</th>
+                <th>price</th>
+                <th>productImage</th>
+                <th>dateFrom</th>
+                <th>dateTo</th>
+                <th>description</th>
+                <th>Category</th>
+                <th>CreatedAt</th>
+            </thead>
+            <tbody>
+                each val in products
+                    <tr>
+                        <td>#{val.name}</td>
+                        <td>#{val.productNumber}</td>
+                        <td>#{val.price}</td>
+                        <td>#{val.dateFrom}</td>
+                        <td>#{val.dateTo}</td>
+                        <td>#{val.description}</td>
+                        <td>#{val.category}</td>
+                        <td>#{val.createdAt}</td>
+                    </tr>
+            </tbody>
+        </table>
+    </body>
+</html>

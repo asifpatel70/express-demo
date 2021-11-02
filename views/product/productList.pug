@@ -50,7 +50,7 @@ block content
                   <img height="100" width="100" src="/images/#{val.image}"/>
               </td>
               <td>#{moment(val.dateFrom).format('DD-MM-YYYY')}</td>
-              <td>#{moment(val.To).format('MMMM d YYYY')}</td>
+              <td>#{moment(val.dateTo).format('MMMM d YYYY')}</td>
               <td><a class='btn btn-primary' href='/products/edit/#{val.id}'>#{i18n.__("edit")}</a></td>
               <td><input type="button" class='btn btn-primary dltrecord' data-type="products" data-id='#{val.id}' value='#{i18n.__("delete")}'></td>
             </tr>
