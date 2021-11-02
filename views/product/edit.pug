@@ -9,20 +9,20 @@ block content
                         <div class="row justify-content-center">
                             <div class="col-lg-7">
                                 <div class="card shadow-lg border-0 rounded-lg mt-5">
-                                    <div class="card-header"><h3 class="text-center font-weight-light my-4">Edit Account</h3></div>
+                                    <div class="card-header"><h3 class="text-center font-weight-light my-4">#{i18n.__("editProduct")}</h3></div>
                                     <div class="card-body">
                                         <form action='/products/update/#{product.id}', method='POST' enctype="multipart/form-data">
                                             <div class="form-floating mb-3">        
                                                 <input required class="form-control" value=#{product.name} name='name' id="inputFirstName" type="text" placeholder="Enter product name" />
-                                                <label for="inputFirstName">Name</label>
+                                                <label for="inputFirstName">#{i18n.__("name")}</label>
                                             </div>
                                             <div class="form-floating mb-3">
                                                 <input required class="form-control" value=#{product.productNumber} name='productNumber' id="inputEmail" type="text"/>
-                                                <label for="inputEmail">Product Name</label>
+                                                <label for="inputEmail">#{i18n.__("productNumber")}</label>
                                             </div>
                                             <div class="form-floating mb-3">        
                                                 <input required class="form-control" value=#{product.price} name='price' id="inputFirstName" type="text" placeholder="Enter product price" />
-                                                <label for="inputFirstName">Price</label>
+                                                <label for="inputFirstName">#{i18n.__("price")}</label>
                                             </div>
                                             select.form-select.form-floating.mb-3(name="status")
                                                 if product.status == 'active'
@@ -36,16 +36,16 @@ block content
                                                 span.input-group-append
                                                     span.input-group-text.bg-white
                                                         i.fa.fa-calendar
-                                                label(for='inputdateFrom') dateFrom
+                                                label(for='inputdateFrom') #{i18n.__("dateFrom")}
                                             .form-group.form-floating.mb-3.input-group.date#datepicker1
                                                 input.form-control#inputdateTo(type='text' value = moment(product.dateTo).format('DD-MM-YYYY') required name="dateTo")
                                                 span.input-group-append
                                                     span.input-group-text.bg-white
                                                         i.fa.fa-calendar
-                                                label(for='inputdateTo') dateTo
+                                                label(for='inputdateTo') #{i18n.__("dateTo")}
                                             .form-floating.mb-3
                                                     textarea.form-control#inpudescription(name="description") #{product.description}
-                                                    label(for='inpudescription') description
+                                                    label(for='inpudescription') #{i18n.__("description")}
                                             select.form-select.form-floating.mb-3(name="category")
                                                 if product.category == 'consumerProduct'
                                                     option( value= 'consumerProduct' selected) Consumer Product

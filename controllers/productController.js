@@ -27,7 +27,8 @@ exports.index = async (req, res,next) =>{
   res.render('./product/productList',{products : product,moment: moment,i18n: res});
 };
 exports.create = (req, res) =>{
-    res.render('./product/create');
+  res.setLocale(req.cookies.i18n);
+    res.render('./product/create',{i18n: res});
 };
 exports.store = async (req, res,next) =>{
     upload.single('image')(req, res, () => {
@@ -66,7 +67,8 @@ exports.edit =  async (req, res) =>{
             message: "product not found with id " + req.params.id
         });            
     }
-    res.render('./product/edit',{product : product,moment: moment });
+    res.setLocale(req.cookies.i18n);
+    res.render('./product/edit',{product : product,moment: moment,i18n: res});
   });
 };
 exports.update = async (req, res) =>{

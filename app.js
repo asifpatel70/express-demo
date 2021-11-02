@@ -44,7 +44,7 @@ var productsRouter = require('./routes/products');
   secret: '2C44-4D44-WppQ38S',
   resave: true,
   saveUninitialized: true,
-  cookie: { maxAge: 60000 }
+  cookie: { maxAge: 6000 }
 }));
 
 app.use(i18n.init);

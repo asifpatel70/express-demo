@@ -22,5 +22,8 @@
     "exportCsv": "Export CSV",
     "exportPdf": "Export PDF",
     "exportExcel": "Export Excel",
-    "productList" : "Product List"
+    "productList" : "Product List",
+    "description":"beskrivelse",
+    "category":"Category",
+    "editProduct":"Edit Product"
 }

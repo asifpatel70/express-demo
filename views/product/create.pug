@@ -11,18 +11,18 @@ block content
                         .col-lg-7
                             .card.shadow-lg.border-0.rounded-lg.mt-5
                             .card-header
-                                h3.text-center.font-weight-light.my-4 Create product
+                                h3.text-center.font-weight-light.my-4 #{i18n.__("createProduct")}
                             .card-body
                                 form(action='/products/store', method='POST' enctype="multipart/form-data")
                                     .form-floating.mb-3
                                             input.form-control#inputName(type='text' required name="name" placeholder='Enter product name')
-                                            label(for='inputName') Name
+                                            label(for='inputName') #{i18n.__("name")}
                                     .form-floating.mb-3
                                             input.form-control#inputproductNumber(type='number' required name="productNumber" placeholder='Enter product number')
-                                            label(for='inputproductNumber') Product Number
+                                            label(for='inputproductNumber') #{i18n.__("productNumber")}
                                     .form-floating.mb-3
                                             input.form-control#inputPrice(type='number' step="any" required name="price" placeholder='Enter Price')
-                                            label(for='inputPrice') Price
+                                            label(for='inputPrice') #{i18n.__("price")}
                                     select.form-select.form-floating.mb-3(name="status")
                                         option(selected) status
                                         option(value='active') Active
@@ -32,18 +32,18 @@ block content
                                             span.input-group-append
                                                 span.input-group-text.bg-white
                                                     i.fa.fa-calendar
-                                            label(for='inputdateFrom') dateFrom
+                                            label(for='inputdateFrom') #{i18n.__("dateFrom")}
                                     .form-group.form-floating.mb-3.input-group.date#datepicker1
                                             input.form-control#inputdateTo(type='text' required name="dateTo")
                                             span.input-group-append
                                                 span.input-group-text.bg-white
                                                     i.fa.fa-calendar
-                                            label(for='inputdateTo') dateTo
+                                            label(for='inputdateTo') #{i18n.__("dateTo")}
                                     .form-floating.mb-3
                                             textarea.form-control#inpudescription(name="description")
-                                            label(for='inpudescription') description
+                                            label(for='inpudescription') #{i18n.__("description")}
                                     select.form-select.form-floating.mb-3(name="category")
-                                        option(selected) Category
+                                        option(selected) #{i18n.__("category")} 
                                         option(value='consumerProduct') Consumer Product
                                         option(value="IndustrialProduct") Industrial Product
                                     .form-floating.mb-3
