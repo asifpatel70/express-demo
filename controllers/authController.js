@@ -17,8 +17,7 @@ exports.signin = (req, res) => {
     if (!user) {
         return res.status(404).send({ message: "User Not found." });
     }
-    var passwordIsValid = (req.body.password == user.password) ? true: false;
-    console.log(passwordIsValid)
+    var passwordIsValid = (md5(req.body.password) == user.password) ? true: false;
     if (!passwordIsValid) {
         return res.status(401).send({
         accessToken: null,
@@ -27,7 +26,7 @@ exports.signin = (req, res) => {
     }
 
     var token = jwt.sign({ id: user.id }, config.secret, {
-        expiresIn: 300 // 5 minit // hours
+        expiresIn: 3000 // 5 minit // hours
     });
 
     var authorities = [];
@@ -39,7 +38,6 @@ exports.signin = (req, res) => {
         id: user.id,
         username: user.username,
         email: user.email,
-        roles: 'ROLE_ADMIN',
         accessToken: token
       //  });
     });

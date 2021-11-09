@@ -167,7 +167,7 @@ exports.exportPdf = async (req, res,next) =>{
         [sequelize.fn('date_format', sequelize.col('createdAt'), '%Y-%m-%d %H:%i:%s'), 'CreatedAt']
     ]});
   const jsonData = JSON.parse(JSON.stringify(product));
-  res.render(path.join(__dirname, './views/product/',"table.pug"), {products: jsonData}, (err, data) => {
+  res.render('./product/table',{products:jsonData}, (err, data) => {
     if (err) {
           res.send(err);
     }else{
@@ -182,16 +182,20 @@ exports.exportPdf = async (req, res,next) =>{
         },
       };
     }
-    pdf.create(data, options).toFile("report.pdf", function (err, data) {
+    pdf.create(data, options).toFile("./public/images/report.pdf", function (err, data) {
       if (err) {
           res.send(err);
       } else {
-          const json2csvParser = new Json2csvParser({ header: true})
-          res.send("File created successfully");
-          res.header('Content-Type', 'application/pdf');
-          res.attachment(report.pdf);
+        res.status(200).end();
       }
     });
+  });
+  res.download('./public/images/report.pdf', 'report.pdf', (err) => {
+    if (err) {
+      res.status(500).send({
+        message: "Could not download the file. " + err,
+      });
+    }
   });
   // const json2csvParser = new Json2csvParser({ header: true});
   // const csv = json2csvParser.parse(jsonData);  
@@ -210,7 +214,7 @@ exports.exportPdf = async (req, res,next) =>{
   // });
   // doc.pipe(res);
   // doc.end();
-  res.render('./product/productList',{products : product,moment: moment});
+ // res.render('./product/productList',{products : product,moment: moment});
 };
 exports.exportExcl = async (req, res,next) =>{
   const product = await Product.findAll({

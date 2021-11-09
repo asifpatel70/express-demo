@@ -17,7 +17,8 @@ router.get('/login',(req, res, next)=>{
   else
   res.render('login');
 });
-router.post("/auth/signin",login.signin);
+router.post("/auth/signin",auth.signin);
+router.post("/login/signin",login.signin);
 router.get('/logout', function (req, res) {
   req.session.destroy();
   res.redirect('/login')

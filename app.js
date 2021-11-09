@@ -34,6 +34,8 @@ app.use(bodyParser.json())
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var productsRouter = require('./routes/products');
+var usersApiRouter = require('./routes/api/users');
+var productsApiRouter = require('./routes/api/products');
 
 // // parse application/json
  
@@ -43,7 +45,8 @@ var productsRouter = require('./routes/products');
   secret: '2C44-4D44-WppQ38S',
   resave: true,
   saveUninitialized: true,
-  cookie: { maxAge: 60000000 }
+  maxAge: Date.now() + (30 * 86400 * 1000),
+  cookie: { maxAge: 60000000000 }
 }));
 
 app.use(i18n.init);
@@ -65,6 +68,9 @@ app.use(express.static('public'))
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/products', productsRouter);
+app.use('/api/users', usersApiRouter);
+app.use('/api/products', productsApiRouter);
+
 
 const dotenv = require('dotenv').config();
 
