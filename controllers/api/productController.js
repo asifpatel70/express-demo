@@ -32,6 +32,42 @@ exports.store = async (req, res,next) =>{
     //     });
     // }
     upload.single('image')(req, res, () => {
+        if(req.body.name == undefined)
+        {
+            return res.json({errorMessage:"name field required"}); 
+        }
+        if(req.body.productNumber == undefined)
+        {
+            return res.json({errorMessage:'productNumber field required'}); 
+        }
+        if(req.body.price == undefined)
+        {
+            return res.json({errorMessage:'price field required'}); 
+        }
+        if(req.body.dateFrom == undefined)
+        {
+            return res.json({errorMessage:'dateFrom field required'}); 
+        }
+        if(req.body.dateTo == undefined)
+        {
+            return res.json({errorMessage:'dateTo field required'}); 
+        }
+        if(req.body.description == undefined)
+        {
+            return res.json({errorMessage:'description field required'}); 
+        }
+        if(req.body.category == undefined)
+        {
+            return res.json({errorMessage:'category field required'}); 
+        }
+        if(req.body.status == undefined)
+        {
+            return res.json({errorMessage:'status field required'}); 
+        }
+        if(req.body.image == undefined)
+        {
+            return res.json({errorMessage:'image field required'}); 
+        }
       Product.findAll({
         where: {
           productNumber: req.body.productNumber

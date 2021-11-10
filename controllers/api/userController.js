@@ -21,6 +21,18 @@ exports.create = async (req, res,next) =>{
         //     errors: errors.array()
         //     });
         // } 
+        if(req.body.firstName == undefined)
+        {
+            return res.json({errorMessage:"firstName field cannot be empty"}); 
+        }
+        if(req.body.userName == undefined)
+        {
+            return res.json({errorMessage:'userName field can not be empty'}); 
+        }
+        if(req.body.password == undefined)
+        {
+            return res.json({errorMessage:'password field can not be empty'}); 
+        }
         User.findAll({
         where: {
             userName: req.body.userName
