@@ -4,7 +4,11 @@ const User = models.User;
 
 exports.index = async (req, res) =>{
   res.setLocale(req.cookies.i18n);
-  const users = await User.findAll();
+  const users = await User.findAll({
+    where: {
+      isActive: true
+    }
+  });
   res.render('./user/userList',{users : users,i18n: res});
 };
 exports.register = (req, res) =>{
@@ -55,13 +59,15 @@ exports.update = async (req, res) =>{
   // res.render('./user/userList',{users : users});
 }
 exports.remove = async (req,res) =>{
-  await User.destroy({
+  await User.update({ 
+    isActive: false
+    },{
     where: {
       id: req.body.id
     }
+  }).then(function(product){
+    res.json({msg:'success'});
   });
-  //res.redirect('/users')
-  res.json({msg:'success'});
 }
 exports.valid = () =>{
 return {

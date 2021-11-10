@@ -9,7 +9,7 @@ const session = require('express-session')
 var $ = require('jquery');
 var i18n = require('i18n');
 const moment = require('moment-timezone');
-moment.tz.setDefault("Asia/Kolkata");
+//moment.tz.setDefault("Asia/Kolkata");
 
 
 i18n.configure({

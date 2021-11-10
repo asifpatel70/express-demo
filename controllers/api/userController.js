@@ -7,7 +7,11 @@ const upload = multer();
 const { body, validationResult } = require('express-validator');
 
 exports.index = async (req, res) =>{
-    const users =  await User.findAll();
+    const users =  await User.findAll({
+        where: {
+          isActive: true
+        }
+      });
     res.json({
         users,
     });
@@ -75,9 +79,9 @@ exports.update = async (req, res) =>{
 }
 exports.remove = async (req,res) =>{
     upload.none()(req, res, () => {
-         User.destroy({
+        User.update({ isActive: false},{
             where: {
-                id: req.body.id
+              id: req.body.id
             }
         });
     });

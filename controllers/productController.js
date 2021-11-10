@@ -25,9 +25,12 @@ const imageStorage = multer.diskStorage({
 const upload = multer({ storage: imageStorage })
 
 exports.index = async (req, res,next) =>{
-  console.log(moment());
   res.setLocale(req.cookies.i18n);
-  const product = await Product.findAll();
+  const product = await Product.findAll({
+    where: {
+      isActive: true
+    }
+  });
   res.render('./product/productList',{products : product,moment: moment,i18n: res});
 };
 exports.create = (req, res) =>{
@@ -46,6 +49,7 @@ exports.store = async (req, res,next) =>{
               return false;
           }
           else{
+            console.log(moment().format('YYYY-MM-DD HH:mm:ss'));
             Product.create({ 
               name: req.body.name, 
               productNumber: req.body.productNumber, 
@@ -56,7 +60,7 @@ exports.store = async (req, res,next) =>{
               category: req.body.category,
               status: req.body.status,
               image: req.file.filename,
-              createdAt:moment().format('YYYY-MM-DD hh:mm:ss')
+              createdAt:moment().format('YYYY-MM-DD HH:mm:ss')
             }).then(function(product) {
                   res.redirect('/products')
             });
@@ -98,13 +102,17 @@ exports.update = async (req, res) =>{
   })
 }
 exports.remove = async (req,res) =>{
-  await Product.destroy({
+  await Product.update({ 
+    isActive: false
+    },{
     where: {
       id: req.body.id
     }
+  }).then(function(product){
+    res.json({msg:'success'});
   });
   //res.redirect('/products')
-  res.json({msg:'success'});
+  //res.json({msg:'success'});
 }
 exports.valid = () =>{
 return {
@@ -136,17 +144,11 @@ return {
 }
 
 exports.exportCsv = async (req, res,next) =>{
-  const product = await Product.findAll({
-    attributes: [
-        'name',
-        'productNumber',
-        'price',
-        [sequelize.fn('date_format', sequelize.col('dateFrom'), '%Y-%m-%d %H:%i:%s'), 'dateFrom'],
-        [sequelize.fn('date_format', sequelize.col('dateTo'), '%Y-%m-%d %H:%i:%s'), 'dateTo'],
-        'description',
-        'category',
-        [sequelize.fn('date_format', sequelize.col('createdAt'), '%Y-%m-%d %H:%i:%s'), 'CreatedAt']
-    ]});
+  if(req.cookies.i18n == 'no'){
+    product = await this.productNo();
+  }else{
+    product = await this.productEn();
+  }
   const jsonData = JSON.parse(JSON.stringify(product));
   const json2csvParser = new Json2csvParser({ header: true});
   const csv = json2csvParser.parse(jsonData);
@@ -155,17 +157,11 @@ exports.exportCsv = async (req, res,next) =>{
   return res.send(csv);
 };
 exports.exportPdf = async (req, res,next) =>{
-  const product = await Product.findAll({
-    attributes: [
-        'name',
-        'productNumber',
-        'price',
-        [sequelize.fn('date_format', sequelize.col('dateFrom'), '%Y-%m-%d %H:%i:%s'), 'dateFrom'],
-        [sequelize.fn('date_format', sequelize.col('dateTo'), '%Y-%m-%d %H:%i:%s'), 'dateTo'],
-        'description',
-        'category',
-        [sequelize.fn('date_format', sequelize.col('createdAt'), '%Y-%m-%d %H:%i:%s'), 'CreatedAt']
-    ]});
+  if(req.cookies.i18n == 'no'){
+    product = await this.productNo();
+  }else{
+    product = await this.productEn();
+  }
   const jsonData = JSON.parse(JSON.stringify(product));
   res.render('./product/table',{products:jsonData}, (err, data) => {
     if (err) {
@@ -186,7 +182,7 @@ exports.exportPdf = async (req, res,next) =>{
       if (err) {
           res.send(err);
       } else {
-        res.status(200).end();
+         res.status(200).end();
       }
     });
   });
@@ -197,37 +193,13 @@ exports.exportPdf = async (req, res,next) =>{
       });
     }
   });
-  // const json2csvParser = new Json2csvParser({ header: true});
-  // const csv = json2csvParser.parse(jsonData);  
-  // res.header('Content-Type', 'application/pdf');
-  // res.attachment(product.pdf);
-  // doc.fillColor('red')
-  //    .text("Name",{align: 'left'});
-  // doc.fillColor('red')
-  //    .text("Product Number",{align: 'left'});
-  // doc.fillColor('red')
-  //    .text("Price",{align: 'left'});
-  // doc.fillColor('red')
-  //    .text("Image",{align: 'left'});
-  // jsonData.forEach(obj => {
-    
-  // });
-  // doc.pipe(res);
-  // doc.end();
- // res.render('./product/productList',{products : product,moment: moment});
 };
 exports.exportExcl = async (req, res,next) =>{
-  const product = await Product.findAll({
-    attributes: [
-        'name',
-        'productNumber',
-        'price',
-        [sequelize.fn('date_format', sequelize.col('dateFrom'), '%Y-%m-%d %H:%i:%s'), 'dateFrom'],
-        [sequelize.fn('date_format', sequelize.col('dateTo'), '%Y-%m-%d %H:%i:%s'), 'dateTo'],
-        'description',
-        'category',
-        [sequelize.fn('date_format', sequelize.col('createdAt'), '%Y-%m-%d %H:%i:%s'), 'CreatedAt']
-    ]});
+  if(req.cookies.i18n == 'no'){
+    product = await this.productNo();
+  }else{
+    product = await this.productEn();
+  }
   const jsonProducts = JSON.parse(JSON.stringify(product));
 
   let workbook = new excel.Workbook();
@@ -239,8 +211,6 @@ exports.exportExcl = async (req, res,next) =>{
     { header: "Price", key: "price", width: 25 },
     { header: "Date From", key: "dateFrom", width: 10 },
     { header: "Date TO", key: "dateTo", width: 10 },
-    { header: "Description", key: "description", width: 10 },
-    { header: "Category", key: "category", width: 10 },
     { header: "CreatedAt", key: "CreatedAt", width: 10 },
   ];
   worksheet.addRows(jsonProducts);
@@ -257,3 +227,27 @@ exports.exportExcl = async (req, res,next) =>{
     res.status(200).end();
   });
 };
+exports.productNo = async() =>
+{
+  return await Product.findAll({
+    attributes: [
+        'name',
+        'productNumber',
+        'price',
+        [sequelize.fn('date_format', sequelize.col('dateFrom'), '%d.%m.%Y %H:%i:%s'), 'dateFrom'],
+        [sequelize.fn('date_format', sequelize.col('dateTo'), '%d.%m.%Y %H:%i:%s'), 'dateTo'],
+        [sequelize.fn('date_format', sequelize.col('createdAt'), '%d.%m.%Y %H:%i:%s'), 'CreatedAt']
+    ]});
+}
+exports.productEn = async() =>
+{
+  return await Product.findAll({
+    attributes: [
+        'name',
+        'productNumber',
+        'price',
+        [sequelize.fn('date_format', sequelize.col('dateFrom'), '%d-%m-%Y %H:%i:%s'), 'dateFrom'],
+        [sequelize.fn('date_format', sequelize.col('dateTo'),   '%d-%m-%Y %H:%i:%s'), 'dateTo'],
+        [sequelize.fn('date_format', sequelize.col('createdAt'),'%d-%m-%Y %H:%i:%s'), 'CreatedAt']
+    ]});
+}

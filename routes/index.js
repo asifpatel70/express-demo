@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 const auth = require("../controllers/authController");
 const login = require("../controllers/loginController");
+const moment = require('moment-timezone');
 
 
 /* GET home page. */
@@ -26,11 +27,13 @@ router.get('/logout', function (req, res) {
 
 router.get('/no', function (req, res) {
   res.cookie('i18n', 'no');
+  moment.tz.setDefault("CET");
   res.redirect('back');
 });
 
 router.get('/en', function (req, res) {
   res.cookie('i18n', 'en');
+  moment.tz.setDefault("CET");
   res.redirect('back');
 });
 

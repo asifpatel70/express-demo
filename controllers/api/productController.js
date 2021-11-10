@@ -18,7 +18,11 @@ const imageStorage = multer.diskStorage({
   const upload = multer({ storage: imageStorage })
   
 exports.index = async (req, res,next) =>{
-    const product = await Product.findAll();
+    const product = await Product.findAll({
+      where: {
+        isActive: true
+      }
+    });
     res.json({
         product,
     });
@@ -64,10 +68,6 @@ exports.store = async (req, res,next) =>{
         {
             return res.json({errorMessage:'status field required'}); 
         }
-        if(req.body.image == undefined)
-        {
-            return res.json({errorMessage:'image field required'}); 
-        }
       Product.findAll({
         where: {
           productNumber: req.body.productNumber
@@ -89,7 +89,7 @@ exports.store = async (req, res,next) =>{
               category: req.body.category,
               status: req.body.status,
               image: req.file.filename,
-              createdAt:moment().format('YYYY-MM-DD hh:mm:ss')
+              createdAt:moment().format('YYYY-MM-DD HH:mm:ss')
             }).then(function(product) {
                 res.json({
                     msg: 'Product created'
@@ -139,11 +139,11 @@ exports.update = async (req, res) =>{
 }
 exports.remove = async (req,res) =>{
     upload.none()(req, res, () => {
-        Product.destroy({
-            where: {
-                id: req.body.id
-            }
-        });
+      Product.update({isActive: false},{
+        where: {
+          id: req.body.id
+        }
+      });
         res.json({msg:'Deleted successfully'});
     })
 }

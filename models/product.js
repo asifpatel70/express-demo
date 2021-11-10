@@ -23,7 +23,8 @@ module.exports = (sequelize, DataTypes) => {
     category: DataTypes.ENUM('consumerProduct','IndustrialProduct'),
     status: DataTypes.ENUM('active','inActive'),
     image: DataTypes.TEXT,
-    createdAt: DataTypes.DATE,
+    isActive:DataTypes.BOOLEAN
+    //createdAt: DataTypes.DATE,
   }, {
     sequelize,
     modelName: 'Product',
