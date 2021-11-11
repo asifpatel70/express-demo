@@ -40,12 +40,12 @@ exports.register = (req, res) =>{
 };
 exports.create = async (req, res,next) =>{ 
   if (!req.body.csrf) {
-    res.render('./user/register',{errors:'CSRF Token not included.'});
+    res.render('./user/register',{errors:'CSRF Token not included.',i18n: res,token: req.session.csrf});
     return false;
   }
 
   if (req.body.csrf !== req.session.csrf) {
-    res.render('./user/register',{errors:'CSRF Token do not match.'});
+    res.render('./user/register',{errors:'CSRF Token do not match.',i18n: res,token: req.session.csrf});
     return false;
   }
   User.findAll({

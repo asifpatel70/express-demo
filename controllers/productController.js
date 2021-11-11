@@ -44,12 +44,12 @@ exports.create = (req, res) =>{
 exports.store = async (req, res,next) =>{
     upload.single('image')(req, res, () => {
       if (!req.body.csrf) {
-        res.render('./product/create',{errors:'CSRF Token not included.'});
+        res.render('./product/create',{token:req.session.csrf,i18n: res,errors:'CSRF Token not included.'});
         return false;
       }
     
       if (req.body.csrf !== req.session.csrf) {
-        res.render('./product/create',{errors:'CSRF Token do not match.'});
+        res.render('./product/create',{token:req.session.csrf,i18n: res,errors:'CSRF Token do not match.'});
         return false;
       }
     
