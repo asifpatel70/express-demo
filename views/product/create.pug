@@ -14,6 +14,7 @@ block content
                                 h3.text-center.font-weight-light.my-4 #{i18n.__("createProduct")}
                             .card-body
                                 form(action='/products/store', method='POST' enctype="multipart/form-data")
+                                    input(type='hidden' name='csrf' value=token)
                                     .form-floating.mb-3
                                             input.form-control#inputName(type='text' required name="name" placeholder='Enter product name')
                                             label(for='inputName') #{i18n.__("name")}

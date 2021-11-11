@@ -10,6 +10,7 @@ const doc = new PDFDocument();
 const excel = require("exceljs");
 const sequelize = require('sequelize');
 var pdf = require("html-pdf");
+var { randomBytes } = require('crypto');
 
 
 
@@ -34,11 +35,24 @@ exports.index = async (req, res,next) =>{
   res.render('./product/productList',{products : product,moment: moment,i18n: res});
 };
 exports.create = (req, res) =>{
+  if (req.session.csrf === undefined) {
+    req.session.csrf = randomBytes(100).toString('base64');
+  }
   res.setLocale(req.cookies.i18n);
-    res.render('./product/create',{i18n: res});
+  res.render('./product/create',{i18n: res,token: req.session.csrf});
 };
 exports.store = async (req, res,next) =>{
     upload.single('image')(req, res, () => {
+      if (!req.body.csrf) {
+        res.render('./product/create',{errors:'CSRF Token not included.'});
+        return false;
+      }
+    
+      if (req.body.csrf !== req.session.csrf) {
+        res.render('./product/create',{errors:'CSRF Token do not match.'});
+        return false;
+      }
+    
       Product.findAll({
         where: {
           productNumber: req.body.productNumber
@@ -69,6 +83,9 @@ exports.store = async (req, res,next) =>{
     });
 };
 exports.edit =  async (req, res) =>{
+  if (req.session.csrf === undefined) {
+    req.session.csrf = randomBytes(100).toString('base64');
+  }
   product = await Product.findByPk(req.params.id)
   .then(product => {
     if(!product) {
@@ -77,11 +94,18 @@ exports.edit =  async (req, res) =>{
         });            
     }
     res.setLocale(req.cookies.i18n);
-    res.render('./product/edit',{product : product,moment: moment,i18n: res});
+    res.render('./product/edit',{product : product,moment: moment,i18n: res,token: req.session.csrf});
   });
 };
 exports.update = async (req, res) =>{
   upload.single('image')(req, res, () => {
+    if (!req.body.csrf) {
+      return res.send('CSRF Token not included.');
+    }
+  
+    if (req.body.csrf !== req.session.csrf) {
+      return res.send('CSRF Token do not match.');
+    }
     Product.update({ 
       name: req.body.name,
       productNumber: req.body.productNumber, 

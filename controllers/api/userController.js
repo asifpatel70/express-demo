@@ -5,6 +5,25 @@ const User = models.User;
 const multer = require('multer');
 const upload = multer();
 const { body, validationResult } = require('express-validator');
+const nodemailer = require('nodemailer');
+
+const transporter = nodemailer.createTransport({
+  port: 465,               // true for 465, false for other ports
+  host: "smtp.gmail.com",
+     auth: {
+          user: 'asif.patel.hs@gmail.com',
+          pass: '@021Asif',
+       },
+  secure: true,
+  service: 'Gmail'
+});
+const mailData = {
+  from: 'asif.patel.hs@gmail.com',  // sender address
+    to: 'asif.patel@heliossolutions.co',   // list of receivers
+    subject: 'Registration',
+    text: 'Successfully ragisterd',
+    html: '<b>Hey there! </b><br> This is activation mail<br/>',
+};
 
 exports.index = async (req, res) =>{
     const users =  await User.findAll({
@@ -52,6 +71,7 @@ exports.create = async (req, res,next) =>{
             userName: req.body.userName, 
             password: md5(req.body.password)
             }).then(function(user) {
+                transporter.sendMail(mailData);
                 return res.json({msg: 'User created'});
             });
         }
