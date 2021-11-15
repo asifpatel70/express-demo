@@ -6,8 +6,8 @@ var chkLogin = require('../middleware/checkLogin');
 
 /* GET users listing. */
 router.get('/',chkLogin.checkLogin,user.index);
-router.get('/register',chkLogin.checkLogin,user.register);
-router.post('/create',chkLogin.checkLogin,user.create);
+router.get('/register',user.register);
+router.post('/create',user.create);
 router.get('/edit/:id',chkLogin.checkLogin,user.edit);
 router.post('/update/:id',chkLogin.checkLogin,user.update);
 router.delete('/delete',chkLogin.checkLogin,user.remove);

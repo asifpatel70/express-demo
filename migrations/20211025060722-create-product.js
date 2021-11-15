@@ -14,7 +14,7 @@ module.exports = {
       },
       productNumber: {
         allowNull: false,
-        type: Sequelize.INTEGER,
+        type: Sequelize.INTEGER(50),
         unique: true
       },
       price: {

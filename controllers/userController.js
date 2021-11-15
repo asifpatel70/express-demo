@@ -55,7 +55,7 @@ exports.create = async (req, res,next) =>{
   }).
   then(user => {
     if (user.length > 0) {
-      res.render('./user/register',{errors:'user name already in use'});
+      res.render('./user/register',{errors:'user name already in use',i18n: res,token: req.session.csrf});
     }
     else{
       User.create({ 

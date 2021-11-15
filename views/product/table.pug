@@ -2,24 +2,24 @@
 <html>
     <head></head>
     <body >
-        <table>
-            <thead>
-                <th>name</th>
-                <th>ProductNumber</th>
-                <th>price</th>
-                <th>dateFrom</th>
-                <th>dateTo</th>
-                <th>CreatedAt</th>
+        <table style=" border: 1px solid black;border-collapse: collapse;">
+            <thead style=" border: 1px solid black;border-collapse: collapse;">
+                <th style=" border: 1px solid black;border-collapse: collapse;">name</th>
+                <th style=" border: 1px solid black;border-collapse: collapse;">ProductNumber</th>
+                <th style=" border: 1px solid black;border-collapse: collapse;">price</th>
+                <th style=" border: 1px solid black;border-collapse: collapse;">dateFrom</th>
+                <th style=" border: 1px solid black;border-collapse: collapse;">dateTo</th>
+                <th style=" border: 1px solid black;border-collapse: collapse;">CreatedAt</th>
             </thead>
-            <tbody>
+            <tbody style=" border: 1px solid black;border-collapse: collapse;">
                 each val in products
-                    <tr>
-                        <td>#{val.name}</td>
-                        <td>#{val.productNumber}</td>
-                        <td>#{val.price}</td>
-                        <td>#{val.dateFrom}</td>
-                        <td>#{val.dateTo}</td>
-                        <td>#{val.CreatedAt}</td>
+                    <tr style=" border: 1px solid black;border-collapse: collapse;">
+                        <td style=" border: 1px solid black;border-collapse: collapse;">#{val.name}</td>
+                        <td style=" border: 1px solid black;border-collapse: collapse;">#{val.productNumber}</td>
+                        <td style=" border: 1px solid black;border-collapse: collapse;">#{val.price}</td>
+                        <td style=" border: 1px solid black;border-collapse: collapse;">#{val.dateFrom}</td>
+                        <td style=" border: 1px solid black;border-collapse: collapse;">#{val.dateTo}</td>
+                        <td style=" border: 1px solid black;border-collapse: collapse;">#{val.createdAt}</td>
                     </tr>
             </tbody>
         </table>

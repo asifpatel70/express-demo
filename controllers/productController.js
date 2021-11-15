@@ -59,11 +59,10 @@ exports.store = async (req, res,next) =>{
         }
       }).then(product => {
           if (product.length > 0) {
-              res.render('./product/create',{errors:'Product number already in use'});
+              res.render('./product/create',{errors:'Product number already in use',i18n: res,token: req.session.csrf});
               return false;
           }
           else{
-            console.log(moment().format('YYYY-MM-DD HH:mm:ss'));
             Product.create({ 
               name: req.body.name, 
               productNumber: req.body.productNumber, 
@@ -206,17 +205,17 @@ exports.exportPdf = async (req, res,next) =>{
       if (err) {
           res.send(err);
       } else {
-         res.status(200).end();
+        res.download('./public/images/report.pdf', 'report.pdf', (err) => {
+          if (err) {
+            res.status(500).send({
+              message: "Could not download the file. " + err,
+            });
+          }
+        });
       }
     });
   });
-  res.download('./public/images/report.pdf', 'report.pdf', (err) => {
-    if (err) {
-      res.status(500).send({
-        message: "Could not download the file. " + err,
-      });
-    }
-  });
+  
 };
 exports.exportExcl = async (req, res,next) =>{
   if(req.cookies.i18n == 'no'){
@@ -254,24 +253,32 @@ exports.exportExcl = async (req, res,next) =>{
 exports.productNo = async() =>
 {
   return await Product.findAll({
+    where: {
+      isActive: true
+    },
     attributes: [
-        'name',
-        'productNumber',
-        'price',
-        [sequelize.fn('date_format', sequelize.col('dateFrom'), '%d.%m.%Y %H:%i:%s'), 'dateFrom'],
-        [sequelize.fn('date_format', sequelize.col('dateTo'), '%d.%m.%Y %H:%i:%s'), 'dateTo'],
-        [sequelize.fn('date_format', sequelize.col('createdAt'), '%d.%m.%Y %H:%i:%s'), 'CreatedAt']
-    ]});
+      'name',
+      'productNumber',
+      'price',
+      [sequelize.fn('date_format', sequelize.col('dateFrom'), '%d.%m.%Y %H:%i:%s'), 'dateFrom'],
+      [sequelize.fn('date_format', sequelize.col('dateTo'), '%d.%m.%Y %H:%i:%s'), 'dateTo'],
+      [sequelize.fn('date_format', sequelize.col('createdAt'), '%d.%m.%Y %H:%i:%s'), 'createdAt']
+    ]
+  });
 }
 exports.productEn = async() =>
 {
   return await Product.findAll({
+    where: {
+      isActive: true
+    },
     attributes: [
-        'name',
-        'productNumber',
-        'price',
-        [sequelize.fn('date_format', sequelize.col('dateFrom'), '%d-%m-%Y %H:%i:%s'), 'dateFrom'],
-        [sequelize.fn('date_format', sequelize.col('dateTo'),   '%d-%m-%Y %H:%i:%s'), 'dateTo'],
-        [sequelize.fn('date_format', sequelize.col('createdAt'),'%d-%m-%Y %H:%i:%s'), 'CreatedAt']
-    ]});
+      'name',
+      'productNumber',
+      'price',
+      [sequelize.fn('date_format', sequelize.col('dateFrom'), '%d-%m-%Y %H:%i:%s'), 'dateFrom'],
+      [sequelize.fn('date_format', sequelize.col('dateTo'),   '%d-%m-%Y %H:%i:%s'), 'dateTo'],
+      [sequelize.fn('date_format', sequelize.col('createdAt'),'%d-%m-%Y %H:%i:%s'), 'createdAt']
+    ]
+  });
 }

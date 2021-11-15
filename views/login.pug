@@ -10,6 +10,8 @@ html
     link(href='https://startbootstrap.github.io/startbootstrap-sb-admin/css/styles.css' rel='stylesheet')
     script(src='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js' crossorigin='anonymous')
   body
+    if(session.loggedpassErrors || session.loggeduserError)
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">User Name and password does not match</div>
     <div id="layoutAuthentication">
         <div id="layoutAuthentication_content">
             <main>
@@ -34,6 +36,7 @@ html
                                         </div>
                                         <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
                                             <input type="submit" value="Login "class="btn btn-primary">
+                                            <a href="/users/register" class="btn btn-primary">Sign up</a>
                                         </div>
                                     </form>
                                 </div>
