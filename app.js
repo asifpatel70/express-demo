@@ -10,6 +10,7 @@ var $ = require('jquery');
 var i18n = require('i18n');
 const moment = require('moment-timezone');
 //moment.tz.setDefault("Asia/Kolkata");
+var cookieSession = require('cookie-session')
 
 
 i18n.configure({
@@ -41,13 +42,19 @@ var productsApiRouter = require('./routes/api/products');
  
  //app.use(cors(corsOptions));
  app.use(cookieParser("i18n_demo"));
- app.use(session({
-  secret: '2C44-4D44-WppQ38S',
-  resave: true,
-  saveUninitialized: true,
-  maxAge: Date.now() + (30 * 86400 * 1000),
-  cookie: { maxAge: 60000000000 }
-}));
+//  app.use(session({
+//   secret: '2C44-4D44-WppQ38S',
+//   resave: true,
+//   saveUninitialized: true,
+//   maxAge: Date.now() + (30 * 86400 * 1000),
+//   cookie: { maxAge: 60000000000 }
+// }));
+app.use(cookieSession({
+  name: 'session',
+  keys: ['2C44-4D44-WppQ38S'],
+  cookie: { maxAge: 60000000000 },
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}))
 
 app.use(i18n.init);
 app.use('/jquery',express.static(path.join(__dirname+'/node_modules/jquery/dist/')));

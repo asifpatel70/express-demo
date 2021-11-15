@@ -10,7 +10,7 @@ router.get('/', function(req, res, next) {
   if(req.session.loggedIn)
   res.redirect('/users')
   else
-  res.render('login');
+  res.render('login',{session: req.session});
 });
 router.get('/login',(req, res, next)=>{
   if(req.session.loggedIn)
@@ -29,10 +29,8 @@ router.get('/login',(req, res, next)=>{
 router.post("/auth/signin",auth.signin);
 router.post("/login/signin",login.signin);
 router.get('/logout', function (req, res) {
-  req.session.destroy(function(err){
-    if(!err)
-    res.redirect('/login')
-  });  
+  req.session = null
+  res.redirect('/login')
 });
 
 router.get('/no', function (req, res) {
