@@ -14,9 +14,17 @@ router.get('/', function(req, res, next) {
 });
 router.get('/login',(req, res, next)=>{
   if(req.session.loggedIn)
-  res.redirect('/users')
+  {
+    res.redirect('/users')
+  }
   else
-  res.render('login');
+  {
+    if(req.cookies.i18n === undefined) {
+      res.cookie('i18n', 'en');
+    }
+    res.render('login');
+  }
+  
 });
 router.post("/auth/signin",auth.signin);
 router.post("/login/signin",login.signin);
