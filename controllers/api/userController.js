@@ -79,7 +79,7 @@ exports.create = async (req, res,next) =>{
                 } 
               });
               if (dataUser){
-                return res.json({msg: 'user name already in use'});
+                return res.json({msg: 'user name already in use but deactivate account'});
               }
               const userData = await User.findOne({ where: { isActive:false,
                 email: req.body.email 
@@ -163,3 +163,13 @@ exports.valid = () =>{
         }
       }
 }
+exports.activesubmit = async (req,res) =>{
+    upload.none()(req, res, () => {
+        User.update({isActive: true},{
+            where: {
+              id: req.body.id
+            }
+        });
+    });
+    return res.json({msg:'Active successfully'});
+  }

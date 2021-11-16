@@ -11,5 +11,6 @@ router.get('/',authJwt.verifyToken,user.index);
  router.get('/edit/:id',authJwt.verifyToken,user.edit);
  router.post('/update/:id',authJwt.verifyToken,user.update);
  router.delete('/delete',authJwt.verifyToken,user.remove);
+ router.post('/active',authJwt.verifyToken,user.activesubmit);
 
 module.exports = router;
