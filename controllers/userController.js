@@ -3,7 +3,7 @@ const md5 = require('md5')
 const User = models.User;
 var { randomBytes } = require('crypto');
 const nodemailer = require('nodemailer');
-
+const { Op } = require("sequelize");
 const transporter = nodemailer.createTransport({
   port: 465,               // true for 465, false for other ports
   host: "smtp.gmail.com",
@@ -14,14 +14,6 @@ const transporter = nodemailer.createTransport({
   secure: true,
   service: 'Gmail'
 });
-const mailData = {
-  from: 'asif.patel.hs@gmail.com',  // sender address
-    to: 'asif.patel@heliossolutions.co',   // list of receivers
-    subject: 'Registration',
-    text: 'Successfully ragisterd',
-    html: '<b>Hey there! </b><br> This is activation mail<br/>',
-};
-
 exports.index = async (req, res) =>{
   res.setLocale(req.cookies.i18n);
   const users = await User.findAll({
@@ -36,7 +28,7 @@ exports.register = (req, res) =>{
     req.session.csrf = randomBytes(100).toString('base64');
   }
   res.setLocale(req.cookies.i18n);
-  res.render('./user/register',{i18n: res,token: req.session.csrf});
+  res.render('./user/register',{i18n: res,token: req.session.csrf,loggedIn:req.session.loggedIn});
 };
 exports.create = async (req, res,next) =>{ 
   if (!req.body.csrf) {
@@ -50,27 +42,56 @@ exports.create = async (req, res,next) =>{
   }
   User.findAll({
     where: {
-      userName: req.body.userName
+      isActive:true,
+      [Op.or]: [
+        { userName: req.body.userName, },
+        { email: req.body.email}
+      ]
     }
   }).
-  then(user => {
+  then(user = async (user) => {
     if (user.length > 0) {
-      res.render('./user/register',{errors:'user name already in use',i18n: res,token: req.session.csrf});
+      return res.render('./user/register',{errors:'user name or email already in use',i18n: res,token: req.session.csrf});
     }
     else{
-      User.create({ 
-        name: req.body.firstName, 
-        userName: req.body.userName, 
-        password: md5(req.body.password)
-        }).then(function(user) {
-          transporter.sendMail(mailData, function (err, info) {
-            if(err)
-              console.log(err)
-            else
-              console.log(info);
-         });
-          res.redirect('/users')
+      const mailData = {
+        from: 'asif.patel.hs@gmail.com',  // sender address
+          to: req.body.email,   // list of receivers
+          subject: 'Registration',
+          text: 'Successfully ragisterd',
+          html: '<b>Hey there! </b><br> This is an activation mail<br/>',
+      };
+      const dataUser = await User.findOne({ where: { isActive:false,
+        userName: req.body.userName 
+        } 
       });
+      if (dataUser){
+        return res.render('./user/register',{errors:'user name already in use',i18n: res,token: req.session.csrf});
+      }
+      const userData = await User.findOne({ where: { isActive:false,
+        email: req.body.email 
+        } 
+      });
+      if (userData) {
+        return res.redirect('/users/active/'+userData.id);
+      }
+      // else
+      // {
+        User.create({ 
+          name: req.body.firstName, 
+          userName: req.body.userName, 
+          password: md5(req.body.password),
+          email:req.body.email,
+          }).then(function(user) {
+            transporter.sendMail(mailData, function (err, info) {
+              if(err)
+                console.log(err)
+              else
+                console.log(info);
+          });
+            res.redirect('/users')
+        });
+      //}
     }
   })
 };
@@ -149,4 +170,19 @@ return {
         errorMessage: "Password must be greater than 8 and contain at least one uppercase letter, one lowercase letter, and one number",
     }
   }
+}
+exports.active = (req,res) =>
+{
+  return res.render('./user/active',{id:req.params.id})
+}
+exports.activesubmit = async (req,res) =>{
+  await User.update({ 
+    isActive: true
+    },{
+    where: {
+      id: req.body.id
+    }
+  }).then(function(user){
+    res.redirect('/login')
+  });
 }

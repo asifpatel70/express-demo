@@ -26,5 +26,9 @@
 	"description": "beskrivelse",
 	"productNumber": "productNumber",
     "category":"Kategori",
-    "editProduct":"Rediger produkt"
+    "editProduct":"Rediger produkt",
+	"login":"Logg Inn",
+	"signup" : "melde deg på",
+	"loginerror" :"Brukernavn og passord stemmer ikke",
+	"email" : "e-post"
 }

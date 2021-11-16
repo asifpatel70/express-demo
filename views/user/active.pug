@@ -15,8 +15,7 @@ html
     <script src="/javascripts/ajax.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
     <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
-
-    
+  
   body
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -24,12 +23,6 @@ html
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
-          <li class="nav-item active">
-            <a class="nav-link" href='/users'>User</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href='/products'>Product</a>
-          </li>
           <li class="nav-item">
             <a class="nav-link" href='/en'>English</a>
           </li>
@@ -37,10 +30,30 @@ html
             <a class="nav-link" href='/no'>Norway</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href='/logout'>Logout</a>
+            <a class="nav-link" href='/login'>login</a>
           </li>
         </ul>
       </div>
     </nav>
-    block content
-
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">Your email id is already use but it is in deactivate mode would you like to be activate </div>
+    #layoutAuthentication
+        #layoutAuthentication_content
+            main
+                .container
+                    .row.justify-content-center
+                        .col-lg-7
+                            form(action='/users/activesubmit', method='POST')
+                                .mt-4.mb-0
+                                    .d-grid
+                                    input(type='hidden' name="id" value=id)
+                                    input.btn.btn-primary.btn-block(type='submit' value="Active")
+        #layoutAuthentication_footer
+            footer.py-4.bg-light.mt-auto
+            .container-fluid.px-4
+                .d-flex.align-items-center.justify-content-between.small
+                .text-muted Copyright @ Your Website 2021
+                div
+                    a(href='#') Privacy Policy
+                    a(href='#') Terms & Conditions
+        script(src='https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js' crossorigin='anonymous')
+        script(src='https://startbootstrap.github.io/startbootstrap-sb-admin/js/scripts.js')

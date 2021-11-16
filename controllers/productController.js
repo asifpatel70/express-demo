@@ -126,7 +126,8 @@ exports.update = async (req, res) =>{
 }
 exports.remove = async (req,res) =>{
   await Product.update({ 
-    isActive: false
+    isActive: false,
+    productNumber : 'DEL'+moment()
     },{
     where: {
       id: req.body.id

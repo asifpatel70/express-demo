@@ -139,7 +139,7 @@ exports.update = async (req, res) =>{
 }
 exports.remove = async (req,res) =>{
     upload.none()(req, res, () => {
-      Product.update({isActive: false},{
+      Product.update({isActive: false,productNumber : 'DEL'+moment()},{
         where: {
           id: req.body.id
         }

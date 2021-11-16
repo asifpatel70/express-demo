@@ -6,6 +6,7 @@ const multer = require('multer');
 const upload = multer();
 const { body, validationResult } = require('express-validator');
 const nodemailer = require('nodemailer');
+const { Op } = require("sequelize");
 
 const transporter = nodemailer.createTransport({
   port: 465,               // true for 465, false for other ports
@@ -17,14 +18,6 @@ const transporter = nodemailer.createTransport({
   secure: true,
   service: 'Gmail'
 });
-const mailData = {
-  from: 'asif.patel.hs@gmail.com',  // sender address
-    to: 'asif.patel@heliossolutions.co',   // list of receivers
-    subject: 'Registration',
-    text: 'Successfully ragisterd',
-    html: '<b>Hey there! </b><br> This is activation mail<br/>',
-};
-
 exports.index = async (req, res) =>{
     const users =  await User.findAll({
         where: {
@@ -56,20 +49,50 @@ exports.create = async (req, res,next) =>{
         {
             return res.json({errorMessage:'password field can not be empty'}); 
         }
+        if(req.body.email == undefined)
+        {
+            return res.json({errorMessage:'Email field can not be empty'}); 
+        }
         User.findAll({
         where: {
-            userName: req.body.userName
+            isActive:true,
+            [Op.or]: [
+                { userName: req.body.userName, },
+                { email: req.body.email}
+            ]
         }
         }).
-        then(user => {
+        then(user = async(user) => {
         if (user.length > 0) {
-            return res.json({msg: 'user name already in use'});
+            return res.json({msg: 'user name or email already in use'});
         }
         else{
+            const mailData = {
+                from: 'asif.patel.hs@gmail.com',  // sender address
+                  to: req.body.email,   // list of receivers
+                  subject: 'Registration',
+                  text: 'Successfully ragisterd',
+                  html: '<b>Hey there! </b><br> This is an activation mail<br/>',
+            };
+            const dataUser = await User.findOne({ where: { isActive:false,
+                userName: req.body.userName 
+                } 
+              });
+              if (dataUser){
+                return res.json({msg: 'user name already in use'});
+              }
+              const userData = await User.findOne({ where: { isActive:false,
+                email: req.body.email 
+                } 
+              });
+              if (userData) {
+                return res.json({msg: 'email already in use but deactivate account'});
+              }
             User.create({ 
             name: req.body.firstName, 
             userName: req.body.userName, 
-            password: md5(req.body.password)
+            password: md5(req.body.password),
+            email:req.body.email,
             }).then(function(user) {
                 transporter.sendMail(mailData);
                 return res.json({msg: 'User created'});
@@ -89,7 +112,7 @@ exports.edit =  async (req, res) =>{
 };
 exports.update = async (req, res) =>{
     upload.none()(req, res, () => {
-         User.update({ name: req.body.firstName, userName: req.body.userName }, {
+         User.update({ name: req.body.firstName}, {
         where: {
             id: req.params.id
         }

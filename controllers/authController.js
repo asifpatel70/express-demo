@@ -10,7 +10,8 @@ var jwt = require("jsonwebtoken");
 exports.signin = (req, res) => {
     User.findOne({
       where: {
-        userName: req.body.userName
+        userName: req.body.userName,
+        isActive: true
       }
     })
     .then(user => {

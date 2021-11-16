@@ -8,8 +8,10 @@ var chkLogin = require('../middleware/checkLogin');
 router.get('/',chkLogin.checkLogin,user.index);
 router.get('/register',user.register);
 router.post('/create',user.create);
+router.get('/active/:id',user.active);
 router.get('/edit/:id',chkLogin.checkLogin,user.edit);
 router.post('/update/:id',chkLogin.checkLogin,user.update);
 router.delete('/delete',chkLogin.checkLogin,user.remove);
+router.post('/activesubmit',user.activesubmit);
 
 module.exports = router;

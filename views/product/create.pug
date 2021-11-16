@@ -19,10 +19,10 @@ block content
                                             input.form-control#inputName(type='text' required name="name" placeholder='Enter product name')
                                             label(for='inputName') #{i18n.__("name")}
                                     .form-floating.mb-3
-                                            input.form-control#inputproductNumber(type='number' required name="productNumber" max="99999999" placeholder='Enter product number')
+                                            input.form-control#inputproductNumber(type='text' required name="productNumber" placeholder='Enter product number')
                                             label(for='inputproductNumber') #{i18n.__("productNumber")}
                                     .form-floating.mb-3
-                                            input.form-control#inputPrice(type='number' step="any" required name="price" placeholder='Enter Price')
+                                            input.form-control#inputPrice(type='number' step='0.01' required name="price" placeholder='Enter Price')
                                             label(for='inputPrice') #{i18n.__("price")}
                                     select.form-select.form-floating.mb-3(name="status" required)
                                         option(value='') status

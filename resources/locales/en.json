@@ -26,5 +26,9 @@
 	"description": "beskrivelse",
 	"category": "Category",
 	"editProduct": "Edit Product",
-	"productNumber": "productNumber"
+	"productNumber": "productNumber",
+	"login":"Login",
+	"signup" : "Sign up",
+	"loginerror" :"User Name and password does not match",
+	"email" : "Email"
 }
