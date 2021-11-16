@@ -82,7 +82,9 @@ app.use('/api/products', productsApiRouter);
 const dotenv = require('dotenv').config();
 
 app.use(function(req, res, next) {
-  next(createError(404));
+  //next(createError(404));
+  res.render('404', { url: req.url });
+    return;
 });
 
 // error handler
