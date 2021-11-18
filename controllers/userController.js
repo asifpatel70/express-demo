@@ -1,7 +1,7 @@
 const models = require("../models");
 const md5 = require('md5')
 const User = models.User;
-var { randomBytes } = require('crypto');
+const { randomBytes } = require('crypto');
 const nodemailer = require('nodemailer');
 const { Op } = require("sequelize");
 const transporter = nodemailer.createTransport({
@@ -9,7 +9,7 @@ const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
      auth: {
           user: 'asif.patel.hs@gmail.com',
-          pass: '*****',
+          pass: '****',
        },
   secure: true,
   service: 'Gmail'
@@ -21,23 +21,24 @@ exports.index = async (req, res) =>{
       isActive: true
     }
   });
-  res.render('./user/userList',{users : users,i18n: res});
+  //req.session.loginuserid
+  res.render('./user/userList',{users : users,i18n: res,loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
 };
 exports.register = (req, res) =>{
   if (req.session.csrf === undefined) {
     req.session.csrf = randomBytes(100).toString('base64');
   }
   res.setLocale(req.cookies.i18n);
-  res.render('./user/register',{i18n: res,token: req.session.csrf,loggedIn:req.session.loggedIn});
+  res.render('./user/register',{i18n: res,token: req.session.csrf,loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
 };
-exports.create = async (req, res,next) =>{ 
+exports.create = async (req, res,next) =>{
   if (!req.body.csrf) {
-    res.render('./user/register',{errors:'CSRF Token not included.',i18n: res,token: req.session.csrf});
+    res.render('./user/register',{errors:'CSRF Token not included.',i18n: res,token: req.session.csrf,loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
     return false;
   }
 
   if (req.body.csrf !== req.session.csrf) {
-    res.render('./user/register',{errors:'CSRF Token do not match.',i18n: res,token: req.session.csrf});
+    res.render('./user/register',{errors:'CSRF Token do not match.',i18n: res,token: req.session.csrf,loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
     return false;
   }
   User.findAll({
@@ -51,14 +52,14 @@ exports.create = async (req, res,next) =>{
   }).
   then(user = async (user) => {
     if (user.length > 0) {
-      return res.render('./user/register',{errors:'user name or email already in use',i18n: res,token: req.session.csrf});
+      return res.render('./user/register',{errors:'user name or email already in use',i18n: res,token: req.session.csrf,loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
     }
     else{
       const mailData = {
         from: 'asif.patel.hs@gmail.com',  // sender address
           to: req.body.email,   // list of receivers
           subject: 'Registration',
-          text: 'Successfully ragisterd',
+          text: 'Successfully ragister',
           html: '<b>Hey there! </b><br> This is an activation mail<br/>',
       };
       const dataUser = await User.findOne({ where: { isActive:false,
@@ -66,10 +67,10 @@ exports.create = async (req, res,next) =>{
         } 
       });
       if (dataUser){
-        return res.render('./user/register',{errors:'user name already in use',i18n: res,token: req.session.csrf});
+        return res.render('./user/register',{errors:'user name already in use',i18n: res,token: req.session.csrf,loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
       }
       const userData = await User.findOne({ where: { isActive:false,
-        email: req.body.email 
+        email: req.body.email
         } 
       });
       if (userData) {
@@ -107,7 +108,7 @@ exports.edit =  async (req, res) =>{
             message: "User not found with id " + req.params.id
         });            
     }
-    res.render('./user/edit',{users : user,i18n: res,token: req.session.csrf});
+    res.render('./user/edit',{users : user,i18n: res,token: req.session.csrf,loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,session:req.session});
   });
 };
 exports.update = async (req, res) =>{

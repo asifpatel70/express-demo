@@ -1,37 +1,37 @@
 extends ../layout
 
-block content  
-  <div class="card mb-4">
-    <div class="card-header">
-        <i class="fas fa-table me-1"></i>#{i18n.__("userList")}
-    </div>
-    <div class="card-body">
-      <table id="datatablesSimple">
-        <thead>
-          <tr>
-            <th>#{i18n.__("name")}</th>
-            <th>#{i18n.__("userName")}</th>
-            <th colspan=2><a class='btn btn-primary' href='/users/register'>#{i18n.__("createUser")}</a></th>
-          </tr>
-        </thead>
-        <tfoot>
-          <tr>
-            <th>#{i18n.__("name")}</th>
-            <th>#{i18n.__("userName")}</th>
-            <th colspan=2><a class='btn btn-primary' href='/users/register'>#{i18n.__("createUser")}</a></th>
-          </tr>
-        </tfoot>
-        <tbody>
-          each val in users
+block content
+  <div id="layoutSidenav_content">  
+    <div class="card mb-4">
+      <div class="card-header">
+          <i class="fas fa-table me-1"></i>#{i18n.__("userList")}
+      </div>
+      <div class="card-body">
+        <table id="datatablesSimple">
+          <thead>
             <tr>
-              <td>#{val.name}</td>
-              <td>#{val.userName}</td>
-              <td><a class='btn btn-primary' href='/users/edit/#{val.id}'>#{i18n.__("edit")}</a></td>
-              <td><input type="button" class='btn btn-primary dltrecord' data-id='#{val.id}' data-type="users" value='#{i18n.__("delete")}'></td>
+              <th>#{i18n.__("name")}</th>
+              <th>#{i18n.__("userName")}</th>
+              <th colspan=2><a class='btn btn-primary' href='/users/register'>#{i18n.__("createUser")}</a></th>
             </tr>
-        </tbody>
-      </table>
-    </div>  
-  </div>  
-  <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script>
-  <script src="https://startbootstrap.github.io/startbootstrap-sb-admin/js/datatables-simple-demo.js"></script>
+          </thead>
+          <tfoot>
+            <tr>
+              <th>#{i18n.__("name")}</th>
+              <th>#{i18n.__("userName")}</th>
+              <th colspan=2><a class='btn btn-primary' href='/users/register'>#{i18n.__("createUser")}</a></th>
+            </tr>
+          </tfoot>
+          <tbody>
+            each val in users
+              <tr>
+                <td>#{val.name}</td>
+                <td>#{val.userName}</td>
+                <td><a class='btn btn-primary' href='/users/edit/#{val.id}'>#{i18n.__("edit")}</a></td>
+                <td><input type="button" class='btn btn-primary dltrecord' data-id='#{val.id}' data-type="users" value='#{i18n.__("delete")}'></td>
+              </tr>
+          </tbody>
+        </table>
+      </div>  
+    </div>
+  </div>

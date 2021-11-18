@@ -51,7 +51,7 @@ router.get('/no', function (req, res) {
 
 router.get('/en', function (req, res) {
   res.cookie('i18n', 'en');
-  moment.tz.setDefault("CET");
+  moment.tz.setDefault("Asia/Kolkata");
   res.redirect('back');
 });
 

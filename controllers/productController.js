@@ -32,24 +32,24 @@ exports.index = async (req, res,next) =>{
       isActive: true
     }
   });
-  res.render('./product/productList',{products : product,moment: moment,i18n: res});
+  res.render('./product/productList',{products : product,moment: moment,i18n: res,loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
 };
 exports.create = (req, res) =>{
   if (req.session.csrf === undefined) {
     req.session.csrf = randomBytes(100).toString('base64');
   }
   res.setLocale(req.cookies.i18n);
-  res.render('./product/create',{i18n: res,token: req.session.csrf});
+  res.render('./product/create',{i18n: res,token: req.session.csrf,loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
 };
 exports.store = async (req, res,next) =>{
     upload.single('image')(req, res, () => {
       if (!req.body.csrf) {
-        res.render('./product/create',{token:req.session.csrf,i18n: res,errors:'CSRF Token not included.'});
+        res.render('./product/create',{token:req.session.csrf,i18n: res,errors:'CSRF Token not included.',loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
         return false;
       }
     
       if (req.body.csrf !== req.session.csrf) {
-        res.render('./product/create',{token:req.session.csrf,i18n: res,errors:'CSRF Token do not match.'});
+        res.render('./product/create',{token:req.session.csrf,i18n: res,errors:'CSRF Token do not match.',loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
         return false;
       }
     
@@ -59,10 +59,17 @@ exports.store = async (req, res,next) =>{
         }
       }).then(product => {
           if (product.length > 0) {
-              res.render('./product/create',{errors:'Product number already in use',i18n: res,token: req.session.csrf});
+              res.render('./product/create',{errors:'Product number already in use',i18n: res,token: req.session.csrf,loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
               return false;
           }
           else{
+            if(req.cookies.i18n == 'no')
+            {
+              moment.tz.setDefault("CET");
+            }else
+            {
+              moment.tz.setDefault("Asia/Kolkata");
+            }
             Product.create({ 
               name: req.body.name, 
               productNumber: req.body.productNumber, 
@@ -81,7 +88,7 @@ exports.store = async (req, res,next) =>{
       })
     });
 };
-exports.edit =  async (req, res) =>{
+exports.edit =  async (req, res) =>{  
   if (req.session.csrf === undefined) {
     req.session.csrf = randomBytes(100).toString('base64');
   }
@@ -93,7 +100,7 @@ exports.edit =  async (req, res) =>{
         });            
     }
     res.setLocale(req.cookies.i18n);
-    res.render('./product/edit',{product : product,moment: moment,i18n: res,token: req.session.csrf});
+    res.render('./product/edit',{product : product,moment: moment,i18n: res,token: req.session.csrf,loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
   });
 };
 exports.update = async (req, res) =>{

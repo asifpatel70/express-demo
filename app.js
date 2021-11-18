@@ -83,7 +83,7 @@ const dotenv = require('dotenv').config();
 
 app.use(function(req, res, next) {
   //next(createError(404));
-  res.render('404', { url: req.url });
+  res.render('404', { loggedIn:req.session.loggedIn});
     return;
 });
 

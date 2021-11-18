@@ -68,6 +68,10 @@ exports.store = async (req, res,next) =>{
         {
             return res.json({errorMessage:'status field required'}); 
         }
+        if(req.image == undefined)
+        {
+          return res.json({errorMessage:'image field required'}); 
+        }
       Product.findAll({
         where: {
           productNumber: req.body.productNumber
@@ -125,7 +129,7 @@ exports.update = async (req, res) =>{
         description: req.body.description,
         category: req.body.category,
         status: req.body.status, 
-        image: (req.file)? req.file.filename : req.body.image_edit,
+        image: (req.file)? req.file.filename : req.body.image_edit
       }, {
         where: {
           id: req.params.id
