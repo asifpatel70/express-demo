@@ -68,7 +68,7 @@ exports.store = async (req, res,next) =>{
         {
             return res.json({errorMessage:'status field required'}); 
         }
-        if(req.image == undefined)
+        if(req.file == undefined)
         {
           return res.json({errorMessage:'image field required'}); 
         }
@@ -104,8 +104,12 @@ exports.store = async (req, res,next) =>{
     });
 };
 exports.edit =  async (req, res) =>{
-    product = await Product.findByPk(req.params.id)
-    .then(product => {
+    product = await Product.findOne({
+            where: {
+                isActive:true,
+                id: req.params.id
+            }
+        }).then(product => {
       if(!product) {
           return res.json({
               message: "product not found with id " + req.params.id
@@ -119,7 +123,16 @@ exports.edit =  async (req, res) =>{
     });
 };
 exports.update = async (req, res) =>{
-    upload.single('image')(req, res, () => {
+    upload.single('image') (req, res, async () => {
+        const dataProduct = await Product.findOne({
+                where: {
+                    isActive:true,
+                    productNumber: req.body.productNumber
+                }
+        });
+        if (dataProduct){
+            return res.json({msg: 'product number already in use'});
+        }
       Product.update({ 
         name: req.body.name,
         productNumber: req.body.productNumber, 

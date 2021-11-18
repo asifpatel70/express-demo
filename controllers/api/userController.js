@@ -102,8 +102,12 @@ exports.create = async (req, res,next) =>{
     })
 };
 exports.edit =  async (req, res) =>{
-    user = await User.findByPk(req.params.id)
-    .then(user => {
+    user = await User.findOne({
+        where: {
+            isActive:true,
+            id:req.params.id
+        }
+    }).then(user => {
         if(!user) {
             return res.json({msg: 'User not found with id ' + req.params.id});
         }
