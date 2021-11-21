@@ -47,13 +47,13 @@ block content
                                             .form-floating.mb-3
                                                     textarea.form-control#inpudescription(name="description") #{product.description}
                                                     label(for='inpudescription') #{i18n.__("description")}
-                                            select.form-select.form-floating.mb-3(name="category")
-                                                if product.category == 'consumerProduct'
-                                                    option( value= 'consumerProduct' selected) Consumer Product
-                                                    option( value= 'IndustrialProduct') Industrial Product
-                                                else 
-                                                    option( value= 'consumerProduct') Consumer Product
-                                                    option( value= 'IndustrialProduct' selected) Industrial Product
+                                            label(for='inpudescription') #{i18n.__("category")}
+                                            select.form-select.form-floating.mb-3(name="category[]" multiple)
+                                                each val in categories
+                                                    if  product.category.map(x => x['id']).includes(val.id)
+                                                        option( selected value=val.id) #{val.name}
+                                                    else
+                                                        option(value=val.id) #{val.name}
                                             .form-floating.mb-3
                                                     input.form-control#inputimage(type='file' name="image")
                                                     label(for='inputimage')

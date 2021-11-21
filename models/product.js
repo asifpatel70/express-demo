@@ -10,7 +10,9 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      //Product.belongsTo(models.Category, {foreignKey: 'category', as: 'categoryId'})
+      //Product.hasMany(models.Category, {as: 'categoryId'})
+      Product.belongsToMany(models.Category, {through: 'pdoductCategory', foreignKey: 'productId', as: 'category'})
     }
   };
   Product.init({
@@ -20,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
     dateFrom: DataTypes.DATE,
     dateTo: DataTypes.DATE,
     description: DataTypes.TEXT,
-    category: DataTypes.ENUM('consumerProduct','IndustrialProduct'),
+    //category: DataTypes.ENUM('consumerProduct','IndustrialProduct'),
     status: DataTypes.ENUM('active','inActive'),
     image: DataTypes.TEXT,
     isActive:DataTypes.BOOLEAN,

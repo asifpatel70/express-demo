@@ -1,5 +1,7 @@
 const models = require("../models");
 const Product = models.Product;
+const Category = models.Category;
+const pdoductCategory = models.pdoductCategory;
 const multer = require('multer');
 var path = require('path');
 //const { Op } = require("sequelize");
@@ -34,15 +36,21 @@ exports.index = async (req, res,next) =>{
   });
   res.render('./product/productList',{products : product,moment: moment,i18n: res,loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
 };
-exports.create = (req, res) =>{
+exports.create = async (req, res) =>{
   if (req.session.csrf === undefined) {
     req.session.csrf = randomBytes(100).toString('base64');
   }
   res.setLocale(req.cookies.i18n);
-  res.render('./product/create',{i18n: res,token: req.session.csrf,loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
+  const categories = await Category.findAll({
+    where: {
+      status: true,
+    }
+  });
+  res.render('./product/create',{categories:categories,i18n: res,token: req.session.csrf,loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
 };
 exports.store = async (req, res,next) =>{
     upload.single('image')(req, res, () => {
+     // console.log(req.body);return false;
       if (!req.body.csrf) {
         res.render('./product/create',{token:req.session.csrf,i18n: res,errors:'CSRF Token not included.',loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
         return false;
@@ -77,12 +85,19 @@ exports.store = async (req, res,next) =>{
               dateFrom: moment.tz(req.body.dateFrom, 'DD-MM-YYYY', 'CET').format('YYYY-MM-DD'),
               dateTo: moment.tz(req.body.dateTo, 'DD-MM-YYYY', 'CET').format('YYYY-MM-DD'),
               description: req.body.description,
-              category: req.body.category,
+             // category: req.body.category,
               status: req.body.status,
               image: req.file.filename,
               createdAt:moment().format('YYYY-MM-DD HH:mm:ss')
             }).then(function(product) {
-                  res.redirect('/products')
+              for (var i=0; i<req.body.category.length; i++){
+                pdoductCategory.create({
+                      productId: product.id,
+                      categoryId: req.body.category[i]
+                  }
+                )
+              }
+              res.redirect('/products')
             });
           }            
       })
@@ -92,7 +107,12 @@ exports.edit =  async (req, res) =>{
   if (req.session.csrf === undefined) {
     req.session.csrf = randomBytes(100).toString('base64');
   }
-  product = await Product.findByPk(req.params.id)
+  const categories = await Category.findAll({
+    where: {
+      status: true,
+    }
+  });
+  product = await Product.findByPk(req.params.id, {include: ['category']})
   .then(product => {
     if(!product) {
         return res.status(404).send({
@@ -100,7 +120,7 @@ exports.edit =  async (req, res) =>{
         });            
     }
     res.setLocale(req.cookies.i18n);
-    res.render('./product/edit',{product : product,moment: moment,i18n: res,token: req.session.csrf,loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
+    res.render('./product/edit',{categories:categories,product : product,moment: moment,i18n: res,token: req.session.csrf,loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
   });
 };
 exports.update = async (req, res) =>{
@@ -119,14 +139,25 @@ exports.update = async (req, res) =>{
       dateFrom: moment.tz(req.body.dateFrom, 'DD-MM-YYYY', 'CET').format('YYYY-MM-DD'),
       dateTo: moment.tz(req.body.dateTo, 'DD-MM-YYYY', 'CET').format('YYYY-MM-DD'),
       description: req.body.description,
-      category: req.body.category,
       status: req.body.status, 
       image: (req.file)? req.file.filename : req.body.image_edit,
     }, {
       where: {
         id: req.params.id
       }
-    }).then(function(product) {
+    }).then(product= async (product) => {
+        await pdoductCategory.destroy({
+          where: {
+            productId: req.params.id
+          }
+        });
+        for (var i=0; i<req.body.category.length; i++){
+          pdoductCategory.create({
+                productId: req.params.id,
+                categoryId: req.body.category[i]
+              }
+          )
+        }
       res.redirect('/products')
     })
   })

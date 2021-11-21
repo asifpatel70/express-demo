@@ -25,10 +25,17 @@
 	"productList": "Produktliste",
 	"description": "beskrivelse",
 	"productNumber": "productNumber",
-    "category":"Kategori",
-    "editProduct":"Rediger produkt",
-	"login":"Logg Inn",
-	"signup" : "melde deg på",
-	"loginerror" :"Brukernavn og passord stemmer ikke",
-	"email" : "e-post"
+	"category": "Kategori",
+	"editProduct": "Rediger produkt",
+	"login": "Logg Inn",
+	"signup": "melde deg på",
+	"loginerror": "Brukernavn og passord stemmer ikke",
+	"email": "e-post",
+	"oldpassword": "Gammelt passord",
+	"newpassword": "Nytt passord",
+	"cnrfn": "Bekreft passord",
+	"categoryList": "kategoriliste",
+	"image": "bilde",
+	"create": "Opprett",
+	"status": "status"
 }

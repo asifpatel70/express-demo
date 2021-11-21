@@ -22,11 +22,16 @@ $(document).ready(function(){
             }
         })
     });
-    
+    $('.js-redio').click(function(){
+        $(".js-subcat").removeClass('d-none')
+    });
+    $('.js-redio1').click(function(){
+        $(".js-subcat").addClass('d-none')
+    });
     tinymce.init({
         selector: 'textarea#inpudescription',
         menubar: false
-      });
+    });
     $(document).on('click','#remove',function(event) {
         event.preventDefault();
         $('#image_edit').val('');

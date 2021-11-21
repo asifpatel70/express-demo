@@ -2,9 +2,9 @@ extends ./layout
 
 block content
     <div id="layoutSidenav_content">
-        if(session)
-            <div class="alert alert-warning alert-dismissible fade show" role="alert">#{i18n.__("loginerror")}</div>
         <div id="layoutAuthentication_content">
+            if(session)
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">#{i18n.__("loginerror")}</div>
             <main>
                 <div class="container">
                     <div class="row justify-content-center">
@@ -34,18 +34,5 @@ block content
                     </div>
                 </div>
             </main>
-        </div>
-        <div id="layoutAuthentication_footer">
-            <footer class="py-4 bg-light mt-auto">
-                <div class="container-fluid px-4">
-                    <div class="d-flex align-items-center justify-content-between small">
-                        <div class="text-muted">Copyright &copy; Your Website 2021</div>
-                        <div>
-                            <a href="#">Privacy Policy</a>
-                            <a href="#">Terms &amp; Conditions</a>
-                        </div>
-                    </div>
-                </div>
-            </footer>
         </div>
     </div>

@@ -108,7 +108,7 @@ exports.edit =  async (req, res) =>{
             message: "User not found with id " + req.params.id
         });            
     }
-    res.render('./user/edit',{users : user,i18n: res,token: req.session.csrf,loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,session:req.session});
+    res.render('./user/edit',{users : user,i18n: res,token: req.session.csrf,loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
   });
 };
 exports.update = async (req, res) =>{
@@ -185,5 +185,41 @@ exports.activesubmit = async (req,res) =>{
     }
   }).then(function(user){
     res.redirect('/login')
+  });
+}
+exports.myprofile = async(req,res) =>
+{
+  if (req.session.csrf === undefined) {
+    req.session.csrf = randomBytes(100).toString('base64');
+  }
+  res.setLocale(req.cookies.i18n);
+  user = await User.findByPk(req.session.loginuserid)
+      .then(user => {
+        res.render('./user/edit',{users : user,i18n: res,token: req.session.csrf,loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
+      });
+}
+exports.changepassword = async (req,res) =>
+{
+  return res.render('./user/changePassword',{i18n: res,token: req.session.csrf,loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
+}
+exports.password = async (req,res) =>
+{
+  user = await User.findByPk(req.session.loginuserid);
+  if((md5(req.body.oldPassword)) != user.password)
+  {
+    return res.render('./user/changePassword',{errors:'Old Password does not verify.',i18n: res,token: req.session.csrf,loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
+  }
+  if(req.body.password != req.body.confirmPassword)
+  {
+    return res.render('./user/changePassword',{errors:'Password Confirmation does not match password.',i18n: res,token: req.session.csrf,loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
+  }
+  await User.update({
+    password: md5(req.body.password)
+  },{
+    where: {
+      id: req.session.loginuserid
+    }
+  }).then(function(user){
+    res.redirect('/users')
   });
 }

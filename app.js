@@ -35,6 +35,7 @@ app.use(bodyParser.json())
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var productsRouter = require('./routes/products');
+var categoriesRouter = require('./routes/categories');
 var usersApiRouter = require('./routes/api/users');
 var productsApiRouter = require('./routes/api/products');
 
@@ -75,6 +76,7 @@ app.use(express.static('public'))
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/products', productsRouter);
+app.use('/categories', categoriesRouter);
 app.use('/api/users', usersApiRouter);
 app.use('/api/products', productsApiRouter);
 

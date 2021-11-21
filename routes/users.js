@@ -13,5 +13,7 @@ router.get('/edit/:id',chkLogin.checkLogin,user.edit);
 router.post('/update/:id',chkLogin.checkLogin,user.update);
 router.delete('/delete',chkLogin.checkLogin,user.remove);
 router.post('/activesubmit',user.activesubmit);
-
+router.get('/myprofile',chkLogin.checkLogin,user.myprofile);
+router.get('/changepassword',chkLogin.checkLogin,user.changepassword);
+router.post('/password',chkLogin.checkLogin,user.password);
 module.exports = router;

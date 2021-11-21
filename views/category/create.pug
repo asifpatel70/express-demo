@@ -1,0 +1,49 @@
+extends ../layout
+
+block content
+    #layoutSidenav_content
+        if(typeof errors != 'undefined')
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">#{errors}</div>
+        #layoutAuthentication_content
+            main
+                .container
+                    .row.justify-content-center
+                        .col-lg-7
+                            .card.shadow-lg.border-0.rounded-lg.mt-5
+                            .card-header
+                                h3.text-center.font-weight-light.my-4 #{i18n.__("create")} #{i18n.__("category")}
+                            .card-body
+                                form(action='/categories/store', method='POST' enctype="multipart/form-data")
+                                    input(type='hidden' name='csrf' value=token)
+                                    .form-floating.mb-3
+                                        input.form-control#inputName(type='text' required name="name" placeholder='Enter category name')
+                                        label(for='inputName') #{i18n.__("name")}
+                                    select.form-select.form-floating.mb-3(name="status" required)
+                                        option(value='') status
+                                        option(value="1") Active
+                                        option(value="2") In Active
+                                    .form-floating.mb-3
+                                        input.form-control#inputimage(type='file' name="image")
+                                        label(for='inputimage')
+                                    <div class="form-check">
+                                        <input class="form-check-input js-redio1" type="radio" name="category" id="parent" value="parent">
+                                        <label class="form-check-label" for="flexRadioDefault1">Parent Category</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input js-redio" type="radio" name="category" id="sub" value="sub">
+                                        <label class="form-check-label" for="flexRadioDefault2">Sub Category</label>
+                                    </div>
+                                    select.form-select.form-floating.mb-3.d-none.js-subcat(name="subcategory")
+                                        each val in categories
+                                            option(value=val.id) #{val.name}
+                                    .mt-4.mb-0
+                                        .d-grid
+                                        input.btn.btn-primary.btn-block(type='submit')
+        #layoutAuthentication_footer
+            footer.py-4.bg-light.mt-auto
+            .container-fluid.px-4
+                .d-flex.align-items-center.justify-content-between.small
+                .text-muted Copyright @ Your Website 2021
+                div
+                    a(href='#') Privacy Policy
+                    a(href='#') Terms & Conditions

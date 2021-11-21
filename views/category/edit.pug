@@ -1,0 +1,65 @@
+extends ../layout
+
+block content
+    #layoutSidenav_content
+        #layoutAuthentication_content
+            main
+                .container
+                    .row.justify-content-center
+                        .col-lg-7
+                            .card.shadow-lg.border-0.rounded-lg.mt-5
+                            .card-header
+                                h3.text-center.font-weight-light.my-4 #{i18n.__("create")} #{i18n.__("category")}
+                            .card-body
+                                form(action='/categories/update/'+category.id, method='POST' enctype="multipart/form-data")
+                                    input(type='hidden' name='csrf' value=token)
+                                    .form-floating.mb-3
+                                        input.form-control#inputName(type='text' readonly value=category.name name="name")
+                                        label(for='inputName') #{i18n.__("name")}
+                                    select.form-select.form-floating.mb-3(name="status")
+                                        if category.status == true
+                                            option( value= '1' selected) Active
+                                            option( value= '0') In Active
+                                        else
+                                            option( value= '1') Active
+                                            option( value= '0' selected) In Active
+                                    .form-floating.mb-3
+                                        <input type="hidden" name="image_edit" id="image_edit" value="#{category.image}">
+                                        input.form-control#inputimage(type='file' name="image")
+                                        label(for='inputimage')
+                                        .col-3#preview_container
+                                        .preview_container.m-auto
+                                        if category.image
+                                            <img id="preview" height=50 width=50 src='/images/#{category.image}' alt='Category logo'/>
+                                            a#remove.close-preview(name='remove' data-toggle='tooltip' title='Delete')
+                                                i.far.fa-trash-alt.text-muted
+                                    <div class="form-check">
+                                        <input class="form-check-input js-redio1" type="radio" name="category" id="parent" value="parent" #{category.parentId == null ? 'checked' : ''}>
+                                        <label class="form-check-label" for="flexRadioDefault1">Parent Category</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input js-redio" type="radio" name="category" id="sub" value="sub" #{category.parentId != null ? 'checked' : ''}>
+                                        <label class="form-check-label" for="flexRadioDefault2">Sub Category</label>
+                                    </div>
+                                    if category.parentId == null
+                                        select.form-select.form-floating.mb-3.d-none.js-subcat(name="subcategory")
+                                            each val in categories
+                                                option(value=val.id) #{val.name}
+                                    else
+                                        select.form-select.form-floating.mb-3.js-subcat(name="subcategory")
+                                            each val in categories
+                                                if category.parentId == val.id
+                                                    option( selected value=val.id) #{val.name}
+                                                else
+                                                    option(value=val.id) #{val.name}
+                                    .mt-4.mb-0
+                                        .d-grid
+                                        input.btn.btn-primary.btn-block(type='submit')
+        #layoutAuthentication_footer
+            footer.py-4.bg-light.mt-auto
+            .container-fluid.px-4
+                .d-flex.align-items-center.justify-content-between.small
+                .text-muted Copyright @ Your Website 2021
+                div
+                    a(href='#') Privacy Policy
+                    a(href='#') Terms & Conditions

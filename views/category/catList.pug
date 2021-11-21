@@ -1,0 +1,46 @@
+extends ../layout
+
+block content
+  <div id="layoutSidenav_content">  
+    <div class="card mb-4">
+      <div class="card-header">
+          <i class="fas fa-table me-1"></i>#{i18n.__("categoryList")}
+      </div>
+      <div class="card-body">
+        <table id="datatablesSimple">
+          <thead>
+            <tr>
+              <th>#{i18n.__("name")}</th>
+              <th>#{i18n.__("status")}</th>
+              <th>#{i18n.__("image")}</th>
+              <th colspan=2><a class='btn btn-primary' href='/categories/create'>#{i18n.__("create")}</a></th>
+            </tr>
+          </thead>
+          <tfoot>
+            <tr>
+              <th>#{i18n.__("name")}</th>
+              <th>#{i18n.__("status")}</th>
+              <th colspan=2><a class='btn btn-primary' href='/categories/create'>#{i18n.__("create")}</a></th>
+            </tr>
+          </tfoot>
+          <tbody>
+            each val in categories
+              <tr>
+                <td>#{val.name}</td>
+                  if val.status == 1
+                    <td>Active
+                  else
+                    <td>Deactivate
+                </td>
+                <td>
+                  if val.image
+                    <img height="100" width="100" src="/images/#{val.image}"/>
+                </td>
+                <td><a class='btn btn-primary' href='/categories/edit/#{val.id}'>#{i18n.__("edit")}</a></td>
+                <td><input type="button" class='btn btn-primary dltrecord' data-id='#{val.id}' data-type="categories" value='#{i18n.__("delete")}'></td>
+              </tr>
+          </tbody>
+        </table>
+      </div>  
+    </div>
+  </div>
