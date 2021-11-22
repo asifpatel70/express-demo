@@ -32,7 +32,17 @@ exports.index = async (req, res,next) =>{
   const product = await Product.findAll({
     where: {
       isActive: true
-    }
+    },
+    include: ['category'],
+    attributes: [
+      'name',
+      'productNumber',
+      'price','image','id',
+      [sequelize.fn('date_format', sequelize.col('dateFrom'), '%d-%m-%Y %H:%i:%s'), 'dateFrom'],
+      [sequelize.fn('date_format', sequelize.col('dateTo'), '%d-%m-%Y %H:%i:%s'), 'dateTo'],
+      [sequelize.fn('date_format', sequelize.col('Product.createdAt'), '%d-%m-%Y %H:%i:%s'), 'createdAt'],
+      [sequelize.fn('date_format', sequelize.col('Product.updatedAt'), '%d-%m-%Y %H:%i:%s'), 'updatedAt'],
+    ]
   });
   res.render('./product/productList',{products : product,moment: moment,i18n: res,loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
 };

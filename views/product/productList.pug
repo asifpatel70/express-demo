@@ -16,6 +16,9 @@ block content
               <th>#{i18n.__("productImage")}</th>
               <th>#{i18n.__("dateFrom")}</th>
               <th>#{i18n.__("dateTo")}</th>
+              <th>#{i18n.__("category")}</th>
+              <th>#{i18n.__("createdAt")}</th>
+              <th>#{i18n.__("updatedAt")}</th>
               <th colspan=2>
                 <a class='btn btn-primary' href='/products/create'>#{i18n.__("createProduct")}</a>
                 <a class='btn btn-primary exportRecords' href='/products/exportcsv'>#{i18n.__("exportCsv")}</a>
@@ -32,6 +35,9 @@ block content
               <th>#{i18n.__("productImage")}</th>
               <th>#{i18n.__("dateFrom")}</th>
               <th>#{i18n.__("dateTo")}</th>
+              <th>#{i18n.__("category")}</th>
+              <th>#{i18n.__("createdAt")}</th>
+              <th>#{i18n.__("updatedAt")}</th>
               <th colspan=2>
                 <a class='btn btn-primary' href='/products/create'>#{i18n.__("createProduct")}</a>
                 <a class='btn btn-primary exportRecords' href='/products/exportcsv'>#{i18n.__("exportCsv")}</a>
@@ -52,6 +58,9 @@ block content
                 </td>
                 <td>#{moment(val.dateFrom).format('DD-MM-YYYY')}</td>
                 <td>#{moment(val.dateTo).format('DD-MM-YYYY')}</td>
+                <td>#{val.category.map(x => x['name']).join(',')}</td>
+                <td>#{val.createdAt}</td>
+                <td>#{val.updatedAt}</td>
                 <td><a class='btn btn-primary' href='/products/edit/#{val.id}'>#{i18n.__("edit")}</a></td>
                 <td><input type="button" class='btn btn-primary dltrecord' data-type="products" data-id='#{val.id}' value='#{i18n.__("delete")}'></td>
               </tr>

@@ -27,5 +27,7 @@
 	"createUser": "createUser",
 	"productNumber": "productNumber",
 	"description": "description",
-	"editProduct": "editProduct"
+	"editProduct": "editProduct",
+	"createdAt" : "createdAt",
+	"updatedAt": "updatedAt"
 }
