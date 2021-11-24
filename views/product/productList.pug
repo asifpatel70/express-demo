@@ -56,8 +56,8 @@ block content
                   if val.image
                     <img height="100" width="100" src="/images/#{val.image}"/>
                 </td>
-                <td>#{moment(val.dateFrom).format('DD-MM-YYYY')}</td>
-                <td>#{moment(val.dateTo).format('DD-MM-YYYY')}</td>
+                <td>#{val.dateFrom}</td>
+                <td>#{val.dateTo}</td>
                 <td>#{val.category.map(x => x['name']).join(',')}</td>
                 <td>#{val.createdAt}</td>
                 <td>#{val.updatedAt}</td>

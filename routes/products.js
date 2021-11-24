@@ -2,10 +2,12 @@ var express = require('express');
 var router = express.Router();
 var product = require('../controllers/productController');
 var chkLogin = require('../middleware/checkLogin');
+const { checkSchema } = require('express-validator');
+const user = require("../controllers/userController");
 
 /* GET products listing. */
 router.get('/',chkLogin.checkLogin,product.index);
-router.get('/create',chkLogin.checkLogin,product.create);
+router.get('/create',[chkLogin.checkLogin,checkSchema(product.valid())],product.create);
 router.get('/edit/:id',chkLogin.checkLogin,product.edit);
 router.delete('/delete',chkLogin.checkLogin,product.remove);
 router.post('/store',chkLogin.checkLogin,product.store);

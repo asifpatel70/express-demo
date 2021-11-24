@@ -2,10 +2,12 @@ extends ../layout
 
 block content
     #layoutSidenav_content
-        if(typeof errors != 'undefined')
-            <div class="alert alert-warning alert-dismissible fade show" role="alert">#{errors}</div>
-        #layoutAuthentication_content
+       #layoutAuthentication_content
             main
+                if(typeof errors != 'undefined')
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">#{errors}</div>
+                if(typeof error != 'undefined')
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">#{error.map(x => x['msg']).join(',')}</div>
                 .container
                     .row.justify-content-center
                         .col-lg-7
@@ -19,17 +21,18 @@ block content
                                             input.form-control#inputFirstName(type='text' required name="firstName" placeholder='#{i18n.__("enterYourName")}')
                                             label(for='inputFirstName') #{i18n.__("name")}
                                     .form-floating.mb-3
-                                            input.form-control#inputUserName(type='text' required name="userName"  placeholder='#{i18n.__("enterYourUserName")}')
+                                            input.form-control#inputUserName(type='text'  name="userName"  required placeholder='#{i18n.__("enterYourUserName")}')
                                             label(for='inputFirstName') #{i18n.__("userName")}
                                     .form-floating.mb-3
                                             input.form-control#inputPassword(type='password' required name="password" placeholder='#{i18n.__("createPassword")}')
                                             label(for='inputPassword') #{i18n.__("password")}
                                     .form-floating.mb-3
-                                            input.form-control#inputPassword(type='email' required name="email" placeholder='#{i18n.__("email")}')
-                                            label(for='inputPassword') #{i18n.__("email")}
+                                            input.form-control#inputEmail(type='email' required name="email" placeholder='#{i18n.__("email")}')
+                                            label(for='inputEmail') #{i18n.__("email")}
                                     .mt-4.mb-0
                                         .d-grid
                                         input.btn.btn-primary.btn-block(type='submit')
-                            <div class="card-footer text-center py-3">
-                                <div class="small"><a href="/login">Have an account? Go to login</a></div>
-                            </div>
+                            if(!loggedIn)
+                                <div class="card-footer text-center py-3">
+                                    <div class="small"><a href="/login">Have an account? Go to login</a></div>
+                                </div>

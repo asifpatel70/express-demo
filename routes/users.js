@@ -3,11 +3,12 @@ var router = express.Router();
 var user = require('../controllers/userController');
 const { authJwt } = require("../middleware");
 var chkLogin = require('../middleware/checkLogin');
+const { checkSchema } = require('express-validator');
 
 /* GET users listing. */
 router.get('/',chkLogin.checkLogin,user.index);
 router.get('/register',user.register);
-router.post('/create',user.create);
+router.post('/create',checkSchema(user.valid()),user.create);
 router.get('/active/:id',user.active);
 router.get('/edit/:id',chkLogin.checkLogin,user.edit);
 router.post('/update/:id',chkLogin.checkLogin,user.update);

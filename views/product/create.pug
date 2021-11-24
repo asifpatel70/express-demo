@@ -2,10 +2,12 @@ extends ../layout
 
 block content
     #layoutSidenav_content
-        if(typeof errors != 'undefined')
-            <div class="alert alert-warning alert-dismissible fade show" role="alert">#{errors}</div>
         #layoutAuthentication_content
             main
+                if(typeof errors != 'undefined')
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">#{errors}</div>
+                if(typeof error != 'undefined')
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">#{error.map(x => x['errorMessage']).join(',')}</div>
                 .container
                     .row.justify-content-center
                         .col-lg-7
@@ -16,10 +18,10 @@ block content
                                 form(action='/products/store', method='POST' enctype="multipart/form-data")
                                     input(type='hidden' name='csrf' value=token)
                                     .form-floating.mb-3
-                                            input.form-control#inputName(type='text' required name="name" placeholder='Enter product name')
+                                            input.form-control#inputName(type='text'  required name="name" placeholder='Enter product name')
                                             label(for='inputName') #{i18n.__("name")}
                                     .form-floating.mb-3
-                                            input.form-control#inputproductNumber(type='text' required name="productNumber" placeholder='Enter product number')
+                                            input.form-control#inputproductNumber(type='text' required  name="productNumber" placeholder='Enter product number')
                                             label(for='inputproductNumber') #{i18n.__("productNumber")}
                                     .form-floating.mb-3
                                             input.form-control#inputPrice(type='number' step='0.01' required name="price" placeholder='Enter Price')
@@ -29,13 +31,13 @@ block content
                                         option(value='active') Active
                                         option(value="inActive") In Active                                                    
                                     .form-group.form-floating.mb-3.input-group.date#datepicker
-                                            input.form-control#inputdateFrom(type='text' required name="dateFrom")
+                                            input.form-control#inputdateFrom(type='text' required  name="dateFrom")
                                             span.input-group-append
                                                 span.input-group-text.bg-white
                                                     i.fa.fa-calendar
                                             label(for='inputdateFrom') #{i18n.__("dateFrom")}
                                     .form-group.form-floating.mb-3.input-group.date#datepicker1
-                                            input.form-control#inputdateTo(type='text' required name="dateTo")
+                                            input.form-control#inputdateTo(type='text' required  name="dateTo")
                                             span.input-group-append
                                                 span.input-group-text.bg-white
                                                     i.fa.fa-calendar
@@ -45,10 +47,10 @@ block content
                                             label(for='inpudescription') #{i18n.__("description")}
                                     label(for='inpudescription') #{i18n.__("category")}
                                     select.form-select.form-floating.mb-3(name="category[]" multiple required)
-                                        each val in categories
+                                        each val in result
                                             option(value=val.id) #{val.name}
                                     .form-floating.mb-3
-                                            input.form-control#inputimage(type='file' required name="image")
+                                            input.form-control#inputimage(type='file' name="image")
                                             label(for='inputimage')
                                     .mt-4.mb-0
                                         .d-grid

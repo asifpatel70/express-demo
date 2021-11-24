@@ -3,7 +3,7 @@ $(document).ready(function(){
         var id = $(this).attr('data-id');
         var type = $(this).attr('data-type'); 
         swal({
-            title: 'Are you sure1?',
+            title: 'Are you sure?',
             text: "Remove current element?",
             buttons: ["Cancel", "Delete"],
             }).then((userResponse)=> {

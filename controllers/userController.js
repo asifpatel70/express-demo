@@ -4,6 +4,7 @@ const User = models.User;
 const { randomBytes } = require('crypto');
 const nodemailer = require('nodemailer');
 const { Op } = require("sequelize");
+const { check, oneOf, validationResult } = require('express-validator')
 const transporter = nodemailer.createTransport({
   port: 465,               // true for 465, false for other ports
   host: "smtp.gmail.com",
@@ -32,6 +33,11 @@ exports.register = (req, res) =>{
   res.render('./user/register',{i18n: res,token: req.session.csrf,loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
 };
 exports.create = async (req, res,next) =>{
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.render('./user/register',{error: errors.array(),i18n: res,token: req.session.csrf,loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
+    return;
+  }
   if (!req.body.csrf) {
     res.render('./user/register',{errors:'CSRF Token not included.',i18n: res,token: req.session.csrf,loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
     return false;
@@ -111,22 +117,25 @@ exports.edit =  async (req, res) =>{
     res.render('./user/edit',{users : user,i18n: res,token: req.session.csrf,loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
   });
 };
-exports.update = async (req, res) =>{
+exports.update = async (req, res) =>
+{
+  user = await User.findByPk(req.params.id);
+  if(req.body.firstName == '' || req.body.firstName == undefined)
+  {
+    return res.render('./user/edit',{errors:'Firstname can not be empty',users : user,i18n: res,token: req.session.csrf,loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
+  }
   if (!req.body.csrf) {
-    return res.send('CSRF Token not included.');
+    return res.render('./user/edit',{errors:'CSRF Token not included.',users : user,i18n: res,token: req.session.csrf,loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
   }
-
   if (req.body.csrf !== req.session.csrf) {
-    return res.send('CSRF Token do not match.');
+    return res.render('./user/edit',{errors:'CSRF Token do not match.',users : user,i18n: res,token: req.session.csrf,loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
   }
-  await User.update({ name: req.body.firstName, userName: req.body.userName }, {
+  await User.update({ name: req.body.firstName}, {
     where: {
       id: req.params.id
     }
   });
   res.redirect('/users')
-  // const users = await User.findAll();
-  // res.render('./user/userList',{users : users});
 }
 exports.remove = async (req,res) =>{
   await User.update({ 
@@ -147,19 +156,21 @@ return {
 
     },
     userName: {
-        custom: {
-            options: value => {
-                return User.findAll({
-                  where: {
-                    userName: value
+      notEmpty: true,
+      errorMessage: "user Name field cannot be empty",
+      custom: {
+          options: value => {
+              return User.findAll({
+                where: {
+                  userName: value
+                }
+              }).then(user => {
+                  if (user.length > 0) {
+                      return Promise.reject('Username already in use')
                   }
-                }).then(user => {
-                    if (user.length > 0) {
-                        return Promise.reject('Username already in use')
-                    }
-                })
-            }
-        }
+              })
+          }
+      }
     },
     password: {
         isStrongPassword: {
@@ -205,9 +216,17 @@ exports.changepassword = async (req,res) =>
 exports.password = async (req,res) =>
 {
   user = await User.findByPk(req.session.loginuserid);
+  if(req.body.oldPassword == '' || req.body.oldPassword == undefined)
+  {
+    return res.render('./user/changePassword',{errors:'old password can not be empty.',i18n: res,token: req.session.csrf,loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
+  }
   if((md5(req.body.oldPassword)) != user.password)
   {
     return res.render('./user/changePassword',{errors:'Old Password does not verify.',i18n: res,token: req.session.csrf,loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
+  }
+  if(req.body.password == '' || req.body.password == undefined)
+  {
+    return res.render('./user/changePassword',{errors:'new password can not be empty.',i18n: res,token: req.session.csrf,loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
   }
   if(req.body.password != req.body.confirmPassword)
   {

@@ -5,6 +5,8 @@ block content
     <div id="layoutSidenav_content">
             <div id="layoutAuthentication_content">
                 <main>
+                    if(typeof errors != 'undefined')
+                        <div class="alert alert-warning alert-dismissible fade show" role="alert">#{errors}</div>
                     <div class="container">
                         <div class="row justify-content-center">
                             <div class="col-lg-7">

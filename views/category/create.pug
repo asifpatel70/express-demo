@@ -2,9 +2,11 @@ extends ../layout
 
 block content
     #layoutSidenav_content
-        if(typeof errors != 'undefined')
-            <div class="alert alert-warning alert-dismissible fade show" role="alert">#{errors}</div>
         #layoutAuthentication_content
+            if(typeof errors != 'undefined')
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">#{errors}</div>
+            if(typeof error != 'undefined')
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">#{error.map(x => x['errorMessage']).join(',')}</div>
             main
                 .container
                     .row.justify-content-center
@@ -25,17 +27,19 @@ block content
                                     .form-floating.mb-3
                                         input.form-control#inputimage(type='file' name="image")
                                         label(for='inputimage')
-                                    <div class="form-check">
-                                        <input class="form-check-input js-redio1" type="radio" name="category" id="parent" value="parent">
+                                    label.mb-10(for='') Select #{i18n.__("category")} type
+                                    <div class="form-check mt-4">
+                                        <input class="form-check-input js-redio1" checked type="radio" name="category" id="parent" value="parent">
                                         <label class="form-check-label" for="flexRadioDefault1">Parent Category</label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input js-redio" type="radio" name="category" id="sub" value="sub">
                                         <label class="form-check-label" for="flexRadioDefault2">Sub Category</label>
                                     </div>
-                                    select.form-select.form-floating.mb-3.d-none.js-subcat(name="subcategory")
-                                        each val in categories
-                                            option(value=val.id) #{val.name}
+                                    select.mt-4.form-select.form-floating.mb-3.d-none.js-subcat(name="subcategory")
+                                        each val,key in result
+                                            if(val.id)
+                                                option(value=val.id) #{val.name}
                                     .mt-4.mb-0
                                         .d-grid
                                         input.btn.btn-primary.btn-block(type='submit')

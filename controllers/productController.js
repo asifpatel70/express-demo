@@ -13,6 +13,7 @@ const excel = require("exceljs");
 const sequelize = require('sequelize');
 var pdf = require("html-pdf");
 var { randomBytes } = require('crypto');
+const { check, oneOf, validationResult } = require('express-validator');
 
 
 
@@ -25,7 +26,17 @@ const imageStorage = multer.diskStorage({
         + path.extname(file.originalname))
   }
 });
-const upload = multer({ storage: imageStorage })
+const upload = multer({
+  storage: imageStorage,
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg") {
+      cb(null, true);
+    } else {
+      cb(null, false);
+      return cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
+    }
+  }
+})
 
 exports.index = async (req, res,next) =>{
   res.setLocale(req.cookies.i18n);
@@ -38,8 +49,8 @@ exports.index = async (req, res,next) =>{
       'name',
       'productNumber',
       'price','image','id',
-      [sequelize.fn('date_format', sequelize.col('dateFrom'), '%d-%m-%Y %H:%i:%s'), 'dateFrom'],
-      [sequelize.fn('date_format', sequelize.col('dateTo'), '%d-%m-%Y %H:%i:%s'), 'dateTo'],
+      [sequelize.fn('date_format', sequelize.col('dateFrom'), '%d-%m-%Y'), 'dateFrom'],
+      [sequelize.fn('date_format', sequelize.col('dateTo'), '%d-%m-%Y'), 'dateTo'],
       [sequelize.fn('date_format', sequelize.col('Product.createdAt'), '%d-%m-%Y %H:%i:%s'), 'createdAt'],
       [sequelize.fn('date_format', sequelize.col('Product.updatedAt'), '%d-%m-%Y %H:%i:%s'), 'updatedAt'],
     ]
@@ -51,24 +62,72 @@ exports.create = async (req, res) =>{
     req.session.csrf = randomBytes(100).toString('base64');
   }
   res.setLocale(req.cookies.i18n);
-  const categories = await Category.findAll({
-    where: {
-      status: true,
-    }
-  });
-  res.render('./product/create',{categories:categories,i18n: res,token: req.session.csrf,loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
+  // const categories = await Category.findAll({
+  //   where: {
+  //     status: true,
+  //   }
+  // });
+  let categories = await this.categories();
+  let result = await this.buildTree(categories,0)
+  res.render('./product/create',{result:result,i18n: res,token: req.session.csrf,loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
 };
 exports.store = async (req, res,next) =>{
-    upload.single('image')(req, res, () => {
-     // console.log(req.body);return false;
+    // const categories = await Category.findAll({
+    //   where: {
+    //     status: true,
+    //   }
+    // });
+    let categories = await this.categories();
+    let result = await this.buildTree(categories,0)
+    upload.single('image')(req, res, function (err) {
+      const error = [];
+      if(err){
+        error[8] ={errorMessage:'Only .png, .jpg and .jpeg format allowed!'};
+      }
+      if(req.body.name == '' || req.body.name == undefined)
+      {
+         error[0] = {errorMessage:"Name field required"};
+      }
+      if(req.body.productNumber == '' || req.body.productNumber == undefined)
+      {
+        error[1] = {errorMessage:'ProductNumber field required'};
+      }
+      if(req.body.price == '' || req.body.price == undefined)
+      {
+        error[2] ={errorMessage:'Price field required'};
+      }
+      if(req.body.dateFrom == undefined || req.body.dateFrom == '')
+      {
+        error[3] ={errorMessage:'DateFrom field required'};
+      }
+      if(req.body.dateTo == undefined || req.body.dateTo == '')
+      {
+        error[4] = {errorMessage:'DateTo field required'};
+      }
+      if(req.body.description == undefined || req.body.description == '')
+      {
+        error[5] = {errorMessage:'Description field required'};
+      }
+      if(req.body.category == undefined || req.body.category == '')
+      {
+        error[6] = {errorMessage:'Category field required'};
+      }
+      if(req.body.status == undefined ||  req.body.status == '')
+      {
+        error[7] ={errorMessage:'Status field required'};
+      }
+      var filtered = error.filter(function (el) {
+        return el != null;
+      });
+      if(filtered.length > 0){
+        return res.render('./product/create',{result:result,error: filtered,token:req.session.csrf,i18n: res,loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
+      }
       if (!req.body.csrf) {
-        res.render('./product/create',{token:req.session.csrf,i18n: res,errors:'CSRF Token not included.',loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
-        return false;
+        return res.render('./product/create',{result:result,token:req.session.csrf,i18n: res,errors:'CSRF Token not included.',loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
       }
     
       if (req.body.csrf !== req.session.csrf) {
-        res.render('./product/create',{token:req.session.csrf,i18n: res,errors:'CSRF Token do not match.',loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
-        return false;
+        return res.render('./product/create',{result:result,token:req.session.csrf,i18n: res,errors:'CSRF Token do not match.',loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
       }
     
       Product.findAll({
@@ -77,8 +136,7 @@ exports.store = async (req, res,next) =>{
         }
       }).then(product => {
           if (product.length > 0) {
-              res.render('./product/create',{errors:'Product number already in use',i18n: res,token: req.session.csrf,loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
-              return false;
+            return res.render('./product/create',{result:result,errors:'Product number already in use',i18n: res,token: req.session.csrf,loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
           }
           else{
             if(req.cookies.i18n == 'no')
@@ -95,9 +153,8 @@ exports.store = async (req, res,next) =>{
               dateFrom: moment.tz(req.body.dateFrom, 'DD-MM-YYYY', 'CET').format('YYYY-MM-DD'),
               dateTo: moment.tz(req.body.dateTo, 'DD-MM-YYYY', 'CET').format('YYYY-MM-DD'),
               description: req.body.description,
-             // category: req.body.category,
               status: req.body.status,
-              image: req.file.filename,
+              image: (req.file)? req.file.filename : null,
               createdAt:moment().format('YYYY-MM-DD HH:mm:ss')
             }).then(function(product) {
               for (var i=0; i<req.body.category.length; i++){
@@ -117,11 +174,13 @@ exports.edit =  async (req, res) =>{
   if (req.session.csrf === undefined) {
     req.session.csrf = randomBytes(100).toString('base64');
   }
-  const categories = await Category.findAll({
-    where: {
-      status: true,
-    }
-  });
+  // const categories = await Category.findAll({
+  //   where: {
+  //     status: true,
+  //   }
+  // });
+  let categories = await this.categories();
+  let result = await this.buildTree(categories,0)
   product = await Product.findByPk(req.params.id, {include: ['category']})
   .then(product => {
     if(!product) {
@@ -130,17 +189,67 @@ exports.edit =  async (req, res) =>{
         });            
     }
     res.setLocale(req.cookies.i18n);
-    res.render('./product/edit',{categories:categories,product : product,moment: moment,i18n: res,token: req.session.csrf,loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
+    res.render('./product/edit',{result:result,product : product,moment: moment,i18n: res,token: req.session.csrf,loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
   });
 };
 exports.update = async (req, res) =>{
-  upload.single('image')(req, res, () => {
+  // const categories = await Category.findAll({
+  //   where: {
+  //     status: true,
+  //   }
+  // });
+  let categories = await this.categories();
+  let result = await this.buildTree(categories,0)
+  product = await Product.findByPk(req.params.id, {include: ['category']});
+  upload.single('image')(req, res,function (err) {
+    const error = [];
+    if(err){
+      error[8] ={errorMessage:'Only .png, .jpg and .jpeg format allowed!'};
+    }
+    if(req.body.name == '' || req.body.name == undefined)
+    {
+      error[0] = {errorMessage:"Name field required "};
+    }
+    if(req.body.productNumber == '' || req.body.productNumber == undefined)
+    {
+      error[1] = {errorMessage:'Product Number field required '};
+    }
+    if(req.body.price == '' || req.body.price == undefined)
+    {
+      error[2] ={errorMessage:'Price field required '};
+    }
+    if(req.body.dateFrom == undefined || req.body.dateFrom == '')
+    {
+      error[3] ={errorMessage:'DateFrom field required '};
+    }
+    if(req.body.dateTo == undefined || req.body.dateTo == '')
+    {
+      error[4] = {errorMessage:'DateTo field required '};
+    }
+    if(req.body.description == undefined || req.body.description == '')
+    {
+      error[5] = {errorMessage:'Description field required '};
+    }
+    if(req.body.category == undefined || req.body.category == '')
+    {
+      error[6] = {errorMessage:'Category field required '};
+    }
+    if(req.body.status == undefined ||  req.body.status == '')
+    {
+      error[7] ={errorMessage:'Status field required '};
+    }
+    var filtered = error.filter(function (el) {
+      return el != null;
+    });
+    if(filtered.length > 0){
+      return res.render('./product/edit',{error: filtered,result:result,product : product,moment: moment,i18n: res,token: req.session.csrf,loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
+    }
     if (!req.body.csrf) {
-      return res.send('CSRF Token not included.');
+      return res.render('./product/edit',{errors:'CSRF Token not included.',result:result,product : product,moment: moment,i18n: res,token: req.session.csrf,loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
     }
   
     if (req.body.csrf !== req.session.csrf) {
-      return res.send('CSRF Token do not match.');
+      return res.render('./product/edit',{errors:'CSRF Token do not match.',result:result,product : product,moment: moment,i18n: res,token: req.session.csrf,loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
     }
     Product.update({ 
       name: req.body.name,
@@ -194,6 +303,8 @@ return {
 
     },
     productNumber: {
+      notEmpty: true,
+      errorMessage: "Product Number cannot be empty",
         custom: {
             options: value => {
                 return Product.findAll({
@@ -212,6 +323,26 @@ return {
       notEmpty: true,
       errorMessage: "Name field cannot be empty"
     },
+    dateFrom:{
+        notEmpty: true,
+        errorMessage: "Name field cannot be empty"
+      },
+    dateTo:{
+        notEmpty: true,
+        errorMessage: "Name field cannot be empty"
+      },
+    status:{
+        notEmpty: true,
+        errorMessage: "Name field cannot be empty"
+      },
+    description:{
+        notEmpty: true,
+        errorMessage: "Name field cannot be empty"
+      },
+    category:{
+        notEmpty: true,
+        errorMessage: "Name field cannot be empty"
+      }
   }
 }
 
@@ -330,4 +461,55 @@ exports.productEn = async() =>
       [sequelize.fn('date_format', sequelize.col('createdAt'),'%d-%m-%Y %H:%i:%s'), 'createdAt']
     ]
   });
+}
+exports.categories = async (parent_id=null,sub_mark='') =>{
+  // if(parent_id == null)
+  // {
+  //     var categories = await Category.findAll({
+  //         where: {
+  //             parentId: null
+  //         }
+  //     });
+  // }
+  // else
+  // {
+  //     var categories = await Category.findAll({
+  //         where: {
+  //             parentId: parent_id
+  //         }
+  //     });
+  // }
+  // return categories;
+  const categories = await Category.findAll({
+    where: {
+      status: true,
+    }
+  });
+  arr=[];
+  categories.forEach( element => {
+    arr[element.id] = {'parentId':element.parentId,'name':element.name}
+  });
+  return arr;
+}
+exports.buildTree= async (categories,parent_id,sub_mark='',categor = []) =>{
+  await categories.forEach((element,key) => {
+    if(element.parentId == null)
+    {
+      element.parentId = 0;
+    }
+
+    if(element.parentId === parent_id)
+    {
+      categor[parent_id+'_'+key] = {name:sub_mark+element.name,id:key};
+      this.buildTree(categories,key,sub_mark+'--',categor);
+    }
+  });
+  var finalarr=[];
+  var count=0;
+  var cat =Object.assign({}, categor);
+  for (const [key, value] of Object.entries(cat)) {
+    finalarr[count] = value
+    count++;
+  }
+  return finalarr;
 }

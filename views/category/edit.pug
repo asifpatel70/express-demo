@@ -3,6 +3,10 @@ extends ../layout
 block content
     #layoutSidenav_content
         #layoutAuthentication_content
+            if(typeof errors != 'undefined')
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">#{errors}</div>
+            if(typeof error != 'undefined')
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">#{error.map(x => x['errorMessage']).join(',')}</div>
             main
                 .container
                     .row.justify-content-center
@@ -14,7 +18,7 @@ block content
                                 form(action='/categories/update/'+category.id, method='POST' enctype="multipart/form-data")
                                     input(type='hidden' name='csrf' value=token)
                                     .form-floating.mb-3
-                                        input.form-control#inputName(type='text' readonly value=category.name name="name")
+                                        input.form-control#inputName(type='text' value=category.name name="name")
                                         label(for='inputName') #{i18n.__("name")}
                                     select.form-select.form-floating.mb-3(name="status")
                                         if category.status == true
@@ -43,15 +47,17 @@ block content
                                     </div>
                                     if category.parentId == null
                                         select.form-select.form-floating.mb-3.d-none.js-subcat(name="subcategory")
-                                            each val in categories
-                                                option(value=val.id) #{val.name}
+                                            each val in result
+                                                if category.id !== val.id
+                                                    option(value=val.id) #{val.name}
                                     else
                                         select.form-select.form-floating.mb-3.js-subcat(name="subcategory")
-                                            each val in categories
-                                                if category.parentId == val.id
-                                                    option( selected value=val.id) #{val.name}
-                                                else
-                                                    option(value=val.id) #{val.name}
+                                                each val in result
+                                                    if category.parentId == val.id
+                                                        option( selected value=val.id) #{val.name}
+                                                    else
+                                                        if category.id !== val.id
+                                                            option(value=val.id) #{val.name}
                                     .mt-4.mb-0
                                         .d-grid
                                         input.btn.btn-primary.btn-block(type='submit')
