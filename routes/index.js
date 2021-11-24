@@ -7,6 +7,9 @@ const moment = require('moment-timezone');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
+  if(req.cookies.i18n === undefined) {
+    res.cookie('i18n', 'en');
+  }
   if(req.session.loggedIn)
   {
     res.redirect('/users')
@@ -14,14 +17,14 @@ router.get('/', function(req, res, next) {
   else
   {
     var loginerr = req.session.loginError;
-    if(req.cookies.i18n === undefined) {
-      res.cookie('i18n', 'en');
-    }
     req.session.loginError = null;
     res.render('login',{i18n: res,session: loginerr});
   }
 });
 router.get('/login',(req, res, next)=>{
+  if(req.cookies.i18n === undefined) {
+    res.cookie('i18n', 'en');
+  }
   if(req.session.loggedIn)
   {
     res.redirect('/users')
@@ -29,9 +32,6 @@ router.get('/login',(req, res, next)=>{
   else
   {
     var loginerr = req.session.loginError;
-    if(req.cookies.i18n === undefined) {
-      res.cookie('i18n', 'en');
-    }
     req.session.loginError = null;
     res.render('login',{i18n: res,session: loginerr});
   }   
