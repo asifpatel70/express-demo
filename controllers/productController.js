@@ -14,6 +14,7 @@ const sequelize = require('sequelize');
 var pdf = require("html-pdf");
 var { randomBytes } = require('crypto');
 const { check, oneOf, validationResult } = require('express-validator');
+const {Op} = require("sequelize");
 
 
 
@@ -80,7 +81,7 @@ exports.store = async (req, res,next) =>{
     let categories = await this.categories();
     let result = await this.buildTree(categories,0)
     upload.single('image')(req, res, function (err) {
-      const error = [];
+      var error = [];
       if(err){
         error[8] ={errorMessage:'Only .png, .jpg and .jpeg format allowed!'};
       }
@@ -201,7 +202,7 @@ exports.update = async (req, res) =>{
   let categories = await this.categories();
   let result = await this.buildTree(categories,0)
   product = await Product.findByPk(req.params.id, {include: ['category']});
-  upload.single('image')(req, res,function (err) {
+  upload.single('image')(req, res,async function (err) {
     const error = [];
     if(err){
       error[8] ={errorMessage:'Only .png, .jpg and .jpeg format allowed!'};
@@ -250,6 +251,18 @@ exports.update = async (req, res) =>{
   
     if (req.body.csrf !== req.session.csrf) {
       return res.render('./product/edit',{errors:'CSRF Token do not match.',result:result,product : product,moment: moment,i18n: res,token: req.session.csrf,loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
+    }
+    const dataProduct = await Product.findOne({
+      where: {
+        isActive:true,
+        productNumber: req.body.productNumber,
+        id: {
+          [Op.ne]: req.params.id,
+        }
+      }
+    });
+    if (dataProduct){
+      return res.render('./product/edit',{errors:'product number already in use.',result:result,product : product,moment: moment,i18n: res,token: req.session.csrf,loggedIn:req.session.loggedIn,loginusername:req.session.loginusername,loginuserid:req.session.loginuserid});
     }
     Product.update({ 
       name: req.body.name,

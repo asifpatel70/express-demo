@@ -38,6 +38,8 @@ var productsRouter = require('./routes/products');
 var categoriesRouter = require('./routes/categories');
 var usersApiRouter = require('./routes/api/users');
 var productsApiRouter = require('./routes/api/products');
+var categoriesApiRouter = require('./routes/api/categories');
+
 
 // // parse application/json
  
@@ -79,6 +81,7 @@ app.use('/products', productsRouter);
 app.use('/categories', categoriesRouter);
 app.use('/api/users', usersApiRouter);
 app.use('/api/products', productsApiRouter);
+app.use('/api/categories', categoriesApiRouter);
 
 
 const dotenv = require('dotenv').config();

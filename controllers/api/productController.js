@@ -1,5 +1,8 @@
 const models = require("../../models");
 const Product = models.Product;
+const Category = models.Category;
+const pdoductCategory = models.pdoductCategory;
+const {Op} = require("sequelize");
 const { check, oneOf, validationResult } = require('express-validator')
 const multer = require('multer');
 var path = require('path');
@@ -15,13 +18,23 @@ const imageStorage = multer.diskStorage({
           + path.extname(file.originalname))
     }
   });
-  const upload = multer({ storage: imageStorage })
+  const upload = multer({ storage: imageStorage,
+      fileFilter: (req, file, cb) => {
+          if (file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg") {
+              cb(null, true);
+          } else {
+              cb(null, false);
+              return cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
+          }
+      }
+  })
   
 exports.index = async (req, res,next) =>{
     const product = await Product.findAll({
       where: {
         isActive: true
-      }
+      },
+        include: ['category'],
     });
     res.json({
         product,
@@ -35,7 +48,10 @@ exports.store = async (req, res,next) =>{
     //     errors: errors.array()
     //     });
     // }
-    upload.single('image')(req, res, () => {
+    upload.single('image')(req, res, function (err) {
+        if(err){
+            return res.json({errorMessage:'Only .png, .jpg and .jpeg format allowed!'});
+        }
         if(req.body.name == undefined)
         {
             return res.json({errorMessage:"name field required"}); 
@@ -68,10 +84,6 @@ exports.store = async (req, res,next) =>{
         {
             return res.json({errorMessage:'status field required'}); 
         }
-        if(req.file == undefined)
-        {
-          return res.json({errorMessage:'image field required'}); 
-        }
       Product.findAll({
         where: {
           productNumber: req.body.productNumber
@@ -90,11 +102,18 @@ exports.store = async (req, res,next) =>{
               dateFrom: moment.tz(req.body.dateFrom, 'DD-MM-YYYY', 'CET').format('YYYY-MM-DD'),
               dateTo: moment.tz(req.body.dateTo, 'DD-MM-YYYY', 'CET').format('YYYY-MM-DD'),
               description: req.body.description,
-              category: req.body.category,
               status: req.body.status,
-              image: req.file.filename,
+              image: (req.file)? req.file.filename : null,
               createdAt:moment().format('YYYY-MM-DD HH:mm:ss')
             }).then(function(product) {
+                var categoryArray = req.body.category.split(',');
+                for (var i=0; i<categoryArray.length; i++){
+                    pdoductCategory.create({
+                            productId: product.id,
+                            categoryId: categoryArray[i]
+                        }
+                    )
+                }
                 res.json({
                     msg: 'Product created'
                  });
@@ -108,7 +127,8 @@ exports.edit =  async (req, res) =>{
             where: {
                 isActive:true,
                 id: req.params.id
-            }
+            },
+            include: ['category']
         }).then(product => {
       if(!product) {
           return res.json({
@@ -123,11 +143,17 @@ exports.edit =  async (req, res) =>{
     });
 };
 exports.update = async (req, res) =>{
-    upload.single('image') (req, res, async () => {
+    upload.single('image') (req, res, async function (err) {
+        if(err){
+            return res.json({errorMessage:'Only .png, .jpg and .jpeg format allowed!'});
+        }
         const dataProduct = await Product.findOne({
                 where: {
                     isActive:true,
-                    productNumber: req.body.productNumber
+                    productNumber: req.body.productNumber,
+                    id: {
+                        [Op.ne]: req.params.id,
+                    }
                 }
         });
         if (dataProduct){
@@ -140,14 +166,26 @@ exports.update = async (req, res) =>{
         dateFrom: moment.tz(req.body.dateFrom, 'DD-MM-YYYY', 'CET').format('YYYY-MM-DD'),
         dateTo: moment.tz(req.body.dateTo, 'DD-MM-YYYY', 'CET').format('YYYY-MM-DD'),
         description: req.body.description,
-        category: req.body.category,
         status: req.body.status, 
         image: (req.file)? req.file.filename : req.body.image_edit
       }, {
         where: {
           id: req.params.id
         }
-      }).then(function(product) {
+      }).then(product= async (product)  => {
+          await pdoductCategory.destroy({
+              where: {
+                  productId: req.params.id
+              }
+          });
+          var categoryArray = req.body.category.split(',');
+          for (var i=0; i<categoryArray.length; i++){
+              pdoductCategory.create({
+                      productId: req.params.id,
+                      categoryId: categoryArray[i]
+                  }
+              )
+          }
         res.json({
             msg: 'Product Edited Successfully'
          });

@@ -251,6 +251,21 @@ module.exports = {
         })
     },
     remove : async (req,res) =>{
+        var result =  await this.deleteTree(req.body.id);
+        if(result.length>0)
+        {
+            console.log('in')
+            await Category.update({
+                status: false
+            },{
+                where: {
+                    id: {
+                        [Op.in]: result,
+                    }
+                }
+            });
+        }
+        await pdoductCategory.destroy({where:{categoryId:{[Op.in]:result}}});
         await pdoductCategory.destroy({where:{categoryId:req.body.id}});
         await Category.update({
             status: false
@@ -264,14 +279,14 @@ module.exports = {
     }
 }
 
-exports.categoryTree = async (parent_id = null, sub_mark = '',categor = []) =>{
-    var categories = await this.categories(parent_id,sub_mark);
-        await Promise.all(categories.map(async (element) => {
-        categor[element.id] = sub_mark+element.name;
-        await this.categoryTree(element.id, sub_mark+'--',categor);
-    }));
-    return categor;
-}
+// exports.categoryTree = async (parent_id = null, sub_mark = '',categor = []) =>{
+//     var categories = await this.categories(parent_id,sub_mark);
+//         await Promise.all(categories.map(async (element) => {
+//         categor[element.id] = sub_mark+element.name;
+//         await this.categoryTree(element.id, sub_mark+'--',categor);
+//     }));
+//     return categor;
+// }
 exports.categories = async () =>{
     const categories = await Category.findAll({
         where: {
@@ -305,4 +320,20 @@ exports.buildTree= async (categories,parent_id,sub_mark='',categor = []) =>{
         count++;
     }
     return finalarr;
+}
+exports.deleteTree = async (parent_id,categor = []) =>{
+    var categories = await Category.findAll({
+        where: {
+            parentId:parent_id,
+            status: true
+        }
+    });
+    await Promise.all(categories.map(async (element) => {
+        categor[element.id] = element.id;
+        await this.deleteTree(element.id,categor);
+    }));
+    var filtered = categor.filter(function (el) {
+        return el != null;
+    });
+    return filtered;
 }
