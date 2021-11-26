@@ -54,6 +54,6 @@ router.get('/en', function (req, res) {
   moment.tz.setDefault("Asia/Kolkata");
   res.redirect('back');
 });
-
+router.post("/auth/refreshtoken", auth.refreshToken);
 
 module.exports = router;
